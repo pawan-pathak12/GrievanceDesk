@@ -1,0 +1,108 @@
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { authApi } from '../../api/authApi';
+import { useToast } from '../../context/ToastContext';
+import { ROUTES } from '../../utils/routes';
+import '../../styles/auth.css';
+
+export default function VerifyOtpPage() {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
+  const inputRefs = useRef([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
+  const email = location.state?.email;
+
+  useEffect(() => {
+    if (!email) navigate(ROUTES.REGISTER_EMAIL, { replace: true });
+  }, [email, navigate]);
+
+  function handleChange(index, value) {
+    if (value.length > 1) value = value[0];
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleKeyDown(index, e) {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length !== 6) return;
+
+    setLoading(true);
+    const res = await authApi.verifyOtp(email, code);
+    setLoading(false);
+
+    if (res.isSuccess) {
+      toast.success(res.data?.message || 'OTP verified successfully');
+      navigate(ROUTES.REGISTER_PASSWORD, { state: { email } });
+    } else {
+      toast.error(res.errors?.[0] || 'Invalid OTP');
+    }
+  }
+
+  async function handleResend() {
+    const res = await authApi.checkEmail(email);
+    if (res.isSuccess) {
+      toast.success('OTP resent to your email');
+    } else {
+      toast.error(res.errors?.[0] || 'Failed to resend OTP');
+    }
+  }
+
+  return (
+    <div className="auth-page">
+      <div className="auth-logo">
+        <div className="auth-logo-icon">🎓</div>
+        <h1>GrievanceDesk</h1>
+        <p>Institutional Efficiency & Fairness</p>
+      </div>
+
+      <div className="auth-card">
+        <h2>Verify your Email</h2>
+        <p className="subtitle">Enter the 6-digit code sent to your email</p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="otp-inputs">
+            {otp.map((digit, i) => (
+              <input
+                key={i}
+                ref={(el) => (inputRefs.current[i] = el)}
+                type="text"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                autoFocus={i === 0}
+              />
+            ))}
+          </div>
+
+          <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
+            {loading ? 'Verifying...' : 'Verify & Continue →'}
+          </button>
+        </form>
+
+        <div className="resend-link">
+          Didn't receive a code?{' '}
+          <button onClick={handleResend}>Resend code</button>
+        </div>
+      </div>
+
+      <div className="page-footer">
+        © 2026 GrievanceDesk. Institutional Efficiency & Fairness.
+      </div>
+    </div>
+  );
+}
