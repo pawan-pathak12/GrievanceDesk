@@ -13,6 +13,7 @@ import CreatePasswordPage from './pages/auth/CreatePasswordPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ForgotVerifyOtpPage from './pages/auth/ForgotVerifyOtpPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import LandingPage from './pages/LandingPage';
 
 // User pages
 import DashboardPage from './pages/user/DashboardPage';
@@ -76,8 +77,8 @@ export default function App() {
               } />
             </Route>
 
-            {/* Fallback */}
-            <Route path="/" element={<Navigate to={ROUTES.LOGIN} replace />} />
+            {/* Public landing page */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
           </Routes>
         </ToastProvider>
