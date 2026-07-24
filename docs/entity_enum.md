@@ -34,7 +34,6 @@ public enum ComplaintStatus
     Pending = 0,
     InProgress = 1,
     Resolved = 2,
-    Completed = 3,
     Irrelevant = 4
 }
 ```
@@ -77,7 +76,6 @@ public class Member
 public class User
 {
     public int UserId { get; set; }
-    public int? MemberId { get; set; }
     public string Username { get; set; }       // Auto-generated: "User_1001"
     public string FirstName { get; set; }
     public string LastName { get; set; }
@@ -102,7 +100,6 @@ public class Complaint
     public string Location { get; set; }
     public ComplaintStatus Status { get; set; }
     public bool IsDuplicate { get; set; }
-    public bool IsForwarded { get; set; }
     public bool IsEdited { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

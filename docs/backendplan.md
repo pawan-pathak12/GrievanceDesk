@@ -136,69 +136,6 @@ This saves ~1.5 hours and avoids build-breaking risks.
 
 ---
 
-## 3. Complete Database Design
-
-### ER Diagram
-
-```mermaid
-erDiagram
-    Members ||--o| Users : "registers as"
-    Users ||--o{ Complaints : "submits"
-    Users ||--o{ ComplaintUpdates : "performs"
-    Complaints ||--o{ ComplaintUpdates : "has history"
-    Users ||--o{ Otps : "verifies"
-    Users ||--o{ RefreshTokens : "authenticates"
-
-    Members {
-        int MemberId PK
-        string FirstName
-        string LastName
-        string Email UK
-        int Role
-        bool IsRegistered
-        datetime CreatedAt
-        datetime UpdatedAt
-    }
-
-    Users {
-        int UserId PK
-        int MemberId FK_UK
-        string FirstName
-        string LastName
-        string Email UK
-        string Password
-        int Role
-        bool IsActive
-        datetime CreatedAt
-        datetime UpdatedAt
-    }
-
-    Complaints {
-        int Id PK
-        int UserId FK
-        string Title
-        string Description
-        int Category
-        string Location
-        int Status
-        bool IsDuplicate
-        bool IsForwarded
-        bool IsEdited
-        datetime CreatedAt
-        datetime UpdatedAt
-    }
-
-    ComplaintUpdates {
-        int Id PK
-        int ComplaintId FK
-        int UpdatedByUserId FK
-        int UpdateType
-        int OldStatus
-        int NewStatus
-        string NoteText
-        datetime CreatedAt
-    }
-```
 
 ### Table: Members
 
@@ -367,7 +304,7 @@ namespace SmartCollegeComplaintPortal.Domain.Entities.Auths
     public class User
     {
         public int UserId { get; set; }
-        public int? MemberId { get; set; }                    // ← NEW: FK to Members
+     
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
@@ -530,6 +467,8 @@ public class AdminDashboardStatsResult : DashboardStatsResult
 
 ### [NEW] `Data/Interfaces/IMemberRepository.cs`
 
+current reomved this not needed : 
+
 ```csharp
 public interface IMemberRepository
 {
@@ -644,6 +583,7 @@ public interface IComplaintRepository
 
 ## 8. All Service Interfaces & Methods
 
+current reomved this not needed : 
 ### [NEW] `Business/Interfaces/Members/IMemberService.cs`
 
 ```csharp

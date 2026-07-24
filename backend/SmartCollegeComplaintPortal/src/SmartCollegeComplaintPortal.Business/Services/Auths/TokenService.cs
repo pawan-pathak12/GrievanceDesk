@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
@@ -35,9 +35,9 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
             {
                 new Claim(JwtRegisteredClaimNames.Sub ,user.UserId.ToString()) ,
                 new Claim(JwtRegisteredClaimNames.Email ,user.Email) ,
-                  new Claim (ClaimTypes.Role , user.Role.ToString()),
-                  new Claim(JwtRegisteredClaimNames.Jti ,Guid.NewGuid().ToString())
-
+                new Claim("username", user.Username ?? string.Empty),
+                new Claim (ClaimTypes.Role , user.Role.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti ,Guid.NewGuid().ToString())
             };
             //2. prove that : their is use of righr jwt secret key to generate token
             var key = new SymmetricSecurityKey(
