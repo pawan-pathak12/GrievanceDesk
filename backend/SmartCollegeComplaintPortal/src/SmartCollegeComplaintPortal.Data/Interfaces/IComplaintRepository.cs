@@ -25,7 +25,6 @@ namespace SmartCollegeComplaintPortal.Data.Interfaces
                                int category, string location, DateTime updatedAt);
         Task<bool> UpdateStatusAsync(int complaintId, int newStatus, DateTime updatedAt);
         Task<bool> UpdateDuplicateFlagAsync(int complaintId, bool isDuplicate, DateTime updatedAt);
-        Task<bool> UpdateForwardedFlagAsync(int complaintId, bool isForwarded, DateTime updatedAt);
         Task<bool> MarkAsEditedAsync(int complaintId, DateTime updatedAt);
 
         // DELETE

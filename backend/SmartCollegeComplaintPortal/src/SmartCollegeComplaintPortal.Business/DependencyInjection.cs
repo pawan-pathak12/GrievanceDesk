@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
+using SmartCollegeComplaintPortal.Business.Interfaces.Complaints;
 using SmartCollegeComplaintPortal.Business.Services.Auths;
+using SmartCollegeComplaintPortal.Business.Services.Complaints;
 using SmartCollegeComplaintPortal.Data;
 using SmartCollegeComplaintPortal.Data.Database;
 using SmartCollegeComplaintPortal.Domain.Entities.Auths;
@@ -39,6 +41,7 @@ namespace SmartCollegeComplaintPortal.Business
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IComplaintService, ComplaintService>();
 
             #endregion
 

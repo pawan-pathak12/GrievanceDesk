@@ -12,7 +12,6 @@ namespace SmartCollegeComplaintPortal.Domain.Entities.Complaints
         public string Location { get; set; } = string.Empty;
         public ComplaintStatus Status { get; set; } = ComplaintStatus.Pending;
         public bool IsDuplicate { get; set; } = false;
-        public bool IsForwarded { get; set; } = false;
         public bool IsEdited { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -32,7 +32,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     Location,
                     Status,
                     IsDuplicate,
-                    IsForwarded,
                     IsEdited,
                     CreatedAt,
                     UpdatedAt
@@ -46,7 +45,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     @Location,
                     @Status,
                     @IsDuplicate,
-                    @IsForwarded,
                     @IsEdited,
                     @CreatedAt,
                     @UpdatedAt
@@ -79,7 +77,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Location,
                     c.Status,
                     c.IsDuplicate,
-                    c.IsForwarded,
                     c.IsEdited,
                     c.CreatedAt,
                     c.UpdatedAt,
@@ -113,7 +110,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Location,
                     c.Status,
                     c.IsDuplicate,
-                    c.IsForwarded,
                     c.IsEdited,
                     c.CreatedAt,
                     c.UpdatedAt,
@@ -144,7 +140,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Location,
                     c.Status,
                     c.IsDuplicate,
-                    c.IsForwarded,
                     c.IsEdited,
                     c.CreatedAt,
                     c.UpdatedAt,
@@ -179,7 +174,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Location,
                     c.Status,
                     c.IsDuplicate,
-                    c.IsForwarded,
                     c.IsEdited,
                     c.CreatedAt,
                     c.UpdatedAt,
@@ -206,7 +200,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Location,
                     c.Status,
                     c.IsDuplicate,
-                    c.IsForwarded,
                     c.IsEdited,
                     c.CreatedAt,
                     c.UpdatedAt,
@@ -332,40 +325,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
 
             _logger.LogWarning(
                 "Failed to update duplicate flag for complaint Id {ComplaintId}",
-                complaintId);
-
-            return false;
-        }
-
-        public async Task<bool> UpdateForwardedFlagAsync(int complaintId, bool isForwarded, DateTime updatedAt)
-        {
-            const string sql = @"
-                UPDATE Complaints
-                SET
-                    IsForwarded = @IsForwarded,
-                    UpdatedAt = @UpdatedAt
-                WHERE Id = @Id;";
-
-            using var connection = _dbContext.CreateConnection();
-
-            var rows = await connection.ExecuteAsync(sql, new
-            {
-                Id = complaintId,
-                IsForwarded = isForwarded,
-                UpdatedAt = updatedAt
-            });
-
-            if (rows > 0)
-            {
-                _logger.LogInformation(
-                    "Updated forwarded flag for complaint Id {ComplaintId} to {IsForwarded}",
-                    complaintId, isForwarded);
-
-                return true;
-            }
-
-            _logger.LogWarning(
-                "Failed to update forwarded flag for complaint Id {ComplaintId}",
                 complaintId);
 
             return false;

@@ -7,7 +7,6 @@ namespace SmartCollegeComplaintPortal.Domain.Enums
         StatusChanged = 2,
         NoteAdded = 3,
         MarkedDuplicate = 4,
-        MarkedForwarded = 5,
-        MarkedIrrelevant = 6
+        MarkedIrrelevant = 5
     }
 }

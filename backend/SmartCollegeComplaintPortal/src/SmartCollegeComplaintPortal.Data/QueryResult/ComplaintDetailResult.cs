@@ -10,7 +10,6 @@ namespace SmartCollegeComplaintPortal.Data.QueryResult
         public string Location { get; set; } = string.Empty;
         public int Status { get; set; }
         public bool IsDuplicate { get; set; }
-        public bool IsForwarded { get; set; }
         public bool IsEdited { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

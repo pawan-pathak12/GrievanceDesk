@@ -56,7 +56,6 @@ namespace SmartCollegeComplaintPortal.Data.Database
                 entity.Property(e => e.Location).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Status).HasDefaultValue(ComplaintStatus.Pending);
                 entity.Property(e => e.IsDuplicate).HasDefaultValue(false);
-                entity.Property(e => e.IsForwarded).HasDefaultValue(false);
                 entity.Property(e => e.IsEdited).HasDefaultValue(false);
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 
