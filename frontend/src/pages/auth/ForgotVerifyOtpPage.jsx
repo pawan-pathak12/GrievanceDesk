@@ -1,52 +1,57 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import AuthBrand from '../../components/auth/AuthBrand';
+import OtpCodeInput from '../../components/auth/OtpCodeInput';
 import '../../Styles/auth.css';
 
 export default function ForgotVerifyOtpPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
-  const inputRefs = useRef([]);
+  const [resending, setResending] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(60);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
   const email = location.state?.email;
+  const hasIncompleteCode = otp.some(Boolean) && otp.join('').length < 6;
+  const validationMessage = error || (hasIncompleteCode ? 'Enter all 6 digits of the verification code.' : '');
 
   useEffect(() => {
     if (!email) navigate('/forgot-password', { replace: true });
   }, [email, navigate]);
 
-  function handleChange(index, value) {
-    const nextValue = value.replace(/\D/g, '').slice(0, 1);
-    const nextOtp = [...otp];
-    nextOtp[index] = nextValue;
-    setOtp(nextOtp);
-    if (nextValue && index < 5) inputRefs.current[index + 1]?.focus();
-  }
-
-  function handleKeyDown(index, e) {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+  useEffect(() => {
+    if (secondsRemaining === 0) {
+      return undefined;
     }
-  }
 
-  function handlePaste(e) {
-    e.preventDefault();
-    const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    if (paste.length === 6) {
-      setOtp(paste.split(''));
-      inputRefs.current[5]?.focus();
+    const countdown = window.setInterval(() => {
+      setSecondsRemaining((seconds) => Math.max(seconds - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(countdown);
+  }, [secondsRemaining]);
+
+  function handleOtpChange(nextOtp) {
+    setOtp(nextOtp);
+    if (error) {
+      setError('');
     }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     const code = otp.join('');
-    if (code.length !== 6) return;
+    if (code.length !== 6) {
+      setError('Enter all 6 digits of the verification code.');
+      return;
+    }
 
     setLoading(true);
+    setError('');
     const res = await authApi.verifyPasswordResetOtp(email, code);
     setLoading(false);
 
@@ -54,14 +59,25 @@ export default function ForgotVerifyOtpPage() {
       toast.success('Code verified successfully');
       navigate('/forgot-password/reset', { state: { email, verificationToken: res.data?.verificationToken } });
     } else {
-      toast.error(res.errors?.[0] || 'Invalid code');
+      setError(res.errors?.[0] || 'Invalid verification code.');
     }
   }
 
   async function handleResend() {
+    if (secondsRemaining > 0 || resending) return;
+
+    setResending(true);
     const res = await authApi.requestPasswordReset(email);
-    if (res.isSuccess) toast.success('Code resent to your email');
-    else toast.error(res.errors?.[0] || 'Failed to resend');
+    setResending(false);
+
+    if (res.isSuccess) {
+      setOtp(['', '', '', '', '', '']);
+      setError('');
+      setSecondsRemaining(60);
+      toast.success('Code resent to your email');
+    } else {
+      toast.error(res.errors?.[0] || 'Failed to resend');
+    }
   }
 
   return (
@@ -82,29 +98,27 @@ export default function ForgotVerifyOtpPage() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="otp-inputs" onPaste={handlePaste}>
-              {otp.map((digit, i) => (
-                <input
-                  key={i}
-                  ref={(el) => (inputRefs.current[i] = el)}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(i, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(i, e)}
-                  autoFocus={i === 0}
-                />
-              ))}
+            <div className="otp-field">
+              <OtpCodeInput value={otp} onChange={handleOtpChange} disabled={loading} invalid={Boolean(validationMessage)} />
+              {validationMessage && <p className="otp-error" role="alert">{validationMessage}</p>}
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
-              {loading ? 'Verifying...' : 'Verify and Continue'}
+              {loading ? 'Verifying...' : 'Verify Code'}
             </button>
           </form>
 
           <div className="resend-link">
-            Did not receive a code? <button onClick={handleResend}>Resend code</button>
+            <span>Did not receive a code?</span>
+            {secondsRemaining > 0 ? (
+              <button type="button" className="resend-countdown" disabled>
+                Resend available in 00:{String(secondsRemaining).padStart(2, '0')}
+              </button>
+            ) : (
+              <button type="button" onClick={handleResend} disabled={resending}>
+                {resending ? 'Resending...' : 'Resend Code'}
+              </button>
+            )}
           </div>
         </div>
       </div>

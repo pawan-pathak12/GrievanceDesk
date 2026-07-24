@@ -407,28 +407,56 @@
 }
 
 .otp-inputs {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  justify-content: center;
   gap: 10px;
   margin: 0;
 }
 
 .otp-inputs input {
-  height: var(--auth-control-height);
+  box-sizing: border-box;
+  width: 52px;
+  height: 52px;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 12px;
+  background: #f8fafc;
   text-align: center;
   color: var(--text-dark);
   font-size: 1.35rem;
   font-weight: 800;
+  caret-color: var(--primary);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
 .otp-inputs input:focus {
-  outline: 3px solid var(--primary-soft);
+  outline: none;
   border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.otp-inputs input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.otp-field {
+  display: grid;
+  gap: 10px;
+}
+
+.otp-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .resend-link {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
   margin-top: 24px;
 }
 
@@ -444,6 +472,18 @@
 .resend-link button {
   border: 0;
   background: transparent;
+  cursor: pointer;
+}
+
+.resend-link button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.resend-countdown {
+  color: var(--text-gray);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 @media (max-width: 960px) {
@@ -480,5 +520,10 @@
 
   .otp-inputs {
     gap: 6px;
+  }
+
+  .otp-inputs input {
+    width: 44px;
+    height: 44px;
   }
 }
