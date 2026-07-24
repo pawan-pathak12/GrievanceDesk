@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Api.Contracts
+﻿namespace SmartCollegeComplaintPortal.API.Contracts
 {
     /// <summary>
     /// Standard success response. Used when result.IsSuccess == true.

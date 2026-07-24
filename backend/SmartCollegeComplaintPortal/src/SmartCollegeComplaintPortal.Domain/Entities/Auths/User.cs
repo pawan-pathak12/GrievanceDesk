@@ -1,6 +1,6 @@
-﻿using DotNetApiStarterKit.Domain.Enums;
+﻿using SmartCollegeComplaintPortal.Domain.Enums;
 
-namespace DotNetApiStarterKit.Domain.Entities.Auths
+namespace SmartCollegeComplaintPortal.Domain.Entities.Auths
 {
     public class User
     {

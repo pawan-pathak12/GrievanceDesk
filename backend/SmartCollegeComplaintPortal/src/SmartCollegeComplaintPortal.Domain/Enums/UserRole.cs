@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Domain.Enums
+﻿namespace SmartCollegeComplaintPortal.Domain.Enums
 {
     public enum UserRole
     {

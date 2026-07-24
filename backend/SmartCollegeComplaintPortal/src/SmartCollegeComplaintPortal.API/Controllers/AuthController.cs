@@ -1,12 +1,12 @@
-﻿using DotNetApiStarterKit.Api.Contracts;
-using DotNetApiStarterKit.Business.DTOs.Auth;
-using DotNetApiStarterKit.Business.DTOs.Otps;
-using DotNetApiStarterKit.Business.Interfaces.Auths;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using SmartCollegeComplaintPortal.API.Contracts;
+using SmartCollegeComplaintPortal.Business.DTOs.Auth;
+using SmartCollegeComplaintPortal.Business.DTOs.Otps;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
 
-namespace DotNetApiStarterKit.Api.Controllers
+namespace SmartCollegeComplaintPortal.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,9 +1,9 @@
-﻿using DotNetApiStarterKit.Business.Interfaces.Auths;
-using DotNetApiStarterKit.Domain.Constants;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
+using SmartCollegeComplaintPortal.Domain.Constants;
 using System.Security.Claims;
 
-namespace DotNetApiStarterKit.Business.Services.Auths
+namespace SmartCollegeComplaintPortal.Business.Services.Auths
 {
     public class CurrentUserService : ICurrentUserService
     {

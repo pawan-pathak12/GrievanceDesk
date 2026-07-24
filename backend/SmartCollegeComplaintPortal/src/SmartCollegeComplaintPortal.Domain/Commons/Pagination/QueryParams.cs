@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Domain.Commons.Pagination
+﻿namespace SmartCollegeComplaintPortal.Domain.Commons.Pagination
 {
     public class QueryParams : PaginationParams
     {

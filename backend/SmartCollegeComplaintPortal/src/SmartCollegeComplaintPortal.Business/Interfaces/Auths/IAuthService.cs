@@ -1,8 +1,8 @@
-﻿using DotNetApiStarterKit.Business.DTOs.Auth;
-using DotNetApiStarterKit.Business.DTOs.Otps;
-using DotNetApiStarterKit.Domain.Commons.Pagination;
+﻿using SmartCollegeComplaintPortal.Business.DTOs.Auth;
+using SmartCollegeComplaintPortal.Business.DTOs.Otps;
+using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
 
-namespace DotNetApiStarterKit.Business.Interfaces.Auths
+namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
 {
     public interface IAuthService
     {

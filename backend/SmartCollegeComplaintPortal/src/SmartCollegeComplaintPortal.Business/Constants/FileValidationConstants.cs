@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Business.Constants
+﻿namespace SmartCollegeComplaintPortal.Business.Constants
 {
     public static class FileValidationConstants
     {

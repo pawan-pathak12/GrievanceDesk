@@ -1,9 +1,9 @@
-﻿using DotNetApiStarterKit.Business.Interfaces.Auths;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
 using System.Net;
 using System.Net.Mail;
 
-namespace DotNetApiStarterKit.Business.Services.Auths
+namespace SmartCollegeComplaintPortal.Business.Services.Auths
 {
     public class EmailService : IEmailService
     {

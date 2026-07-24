@@ -1,11 +1,11 @@
-﻿using DotNetApiStarterKit.Data.Database;
-using DotNetApiStarterKit.Data.Interfaces;
-using DotNetApiStarterKit.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SmartCollegeComplaintPortal.Data.Database;
+using SmartCollegeComplaintPortal.Data.Interfaces;
+using SmartCollegeComplaintPortal.Data.Repositories;
 
-namespace DotNetApiStarterKit.Data
+namespace SmartCollegeComplaintPortal.Data
 {
     public static class DependencyInjection
     {

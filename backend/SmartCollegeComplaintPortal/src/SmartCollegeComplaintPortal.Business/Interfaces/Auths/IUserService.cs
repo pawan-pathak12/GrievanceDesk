@@ -1,7 +1,7 @@
-﻿using DotNetApiStarterKit.Business.DTOs.Users;
-using DotNetApiStarterKit.Domain.Commons.Pagination;
+﻿using SmartCollegeComplaintPortal.Business.DTOs.Users;
+using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
 
-namespace DotNetApiStarterKit.Business.Interfaces.Auths
+namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
 {
     public interface IUserService
     {

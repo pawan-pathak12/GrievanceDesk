@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DotNetApiStarterKit.Business.DTOs.Auth
+namespace SmartCollegeComplaintPortal.Business.DTOs.Auth
 {
     public class CreatePasswordDto
     {

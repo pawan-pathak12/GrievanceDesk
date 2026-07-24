@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
-namespace DotNetApiStarterKit.Data.Database
+namespace SmartCollegeComplaintPortal.Data.Database
 {
     public class SystemDbContext
     {

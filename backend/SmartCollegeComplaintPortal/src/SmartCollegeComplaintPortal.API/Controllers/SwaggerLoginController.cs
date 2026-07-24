@@ -1,6 +1,6 @@
-﻿using DotNetApiStarterKit.Api.Middlewares;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using SmartCollegeComplaintPortal.API.Middlewares;
 
 namespace DotNetApiStarterKit.Api.Controllers
 {

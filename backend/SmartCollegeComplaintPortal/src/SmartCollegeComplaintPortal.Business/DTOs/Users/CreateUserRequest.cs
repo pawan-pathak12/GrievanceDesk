@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DotNetApiStarterKit.Business.DTOs.Users
+namespace SmartCollegeComplaintPortal.Business.DTOs.Users
 {
     public class CreateUserByAdminRequest
     {

@@ -1,6 +1,6 @@
-﻿using DotNetApiStarterKit.Domain.Enums;
+﻿using SmartCollegeComplaintPortal.Domain.Enums;
 
-namespace DotNetApiStarterKit.Domain.Commons.Pagination
+namespace SmartCollegeComplaintPortal.Domain.Commons.Pagination
 {
     public class UserQueryParams : QueryParams
     {

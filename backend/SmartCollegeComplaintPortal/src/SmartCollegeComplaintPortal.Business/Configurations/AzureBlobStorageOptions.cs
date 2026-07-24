@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Business.Configurations
+﻿namespace SmartCollegeComplaintPortal.Business.Configurations
 {
     public class AzureBlobStorageOptions
     {

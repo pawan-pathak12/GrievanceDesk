@@ -1,6 +1,6 @@
-﻿using DotNetApiStarterKit.Api.Middlewares;
+﻿using SmartCollegeComplaintPortal.API.Middlewares;
 
-namespace DotNetApiStarterKit.Api.Extensions
+namespace SmartCollegeComplaintPortal.API.Extensions
 {
     public static class MiddlewareExtensions
     {

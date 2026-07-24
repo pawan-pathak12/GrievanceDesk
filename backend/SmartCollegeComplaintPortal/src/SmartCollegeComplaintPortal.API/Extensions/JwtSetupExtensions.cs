@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace DotNetApiStarterKit.Api.Extensions
+namespace SmartCollegeComplaintPortal.API.Extensions
 {
     public static class JwtSetupExtensions
     {

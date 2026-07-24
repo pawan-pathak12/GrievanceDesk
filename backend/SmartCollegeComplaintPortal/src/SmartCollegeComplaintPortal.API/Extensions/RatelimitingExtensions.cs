@@ -1,8 +1,8 @@
-﻿using DotNetApiStarterKit.Domain.Constants;
-using Microsoft.AspNetCore.RateLimiting;
+﻿using Microsoft.AspNetCore.RateLimiting;
+using SmartCollegeComplaintPortal.Domain.Constants;
 using System.Threading.RateLimiting;
 
-namespace DotNetApiStarterKit.Api.Extensions
+namespace SmartCollegeComplaintPortal.API.Extensions
 {
     public static class RatelimitingExtensions
     {

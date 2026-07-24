@@ -1,14 +1,14 @@
-﻿using DotNetApiStarterKit.Business.Interfaces.Auths;
-using DotNetApiStarterKit.Domain.Constants;
-using DotNetApiStarterKit.Domain.Entities.Auths;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
+using SmartCollegeComplaintPortal.Domain.Constants;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace DotNetApiStarterKit.Business.Services.Auths
+namespace SmartCollegeComplaintPortal.Business.Services.Auths
 {
     public class TokenService : ITokenService
     {

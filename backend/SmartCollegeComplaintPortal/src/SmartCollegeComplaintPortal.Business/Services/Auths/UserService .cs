@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using DotNetApiStarterKit.Business.DTOs.Users;
-using DotNetApiStarterKit.Business.Interfaces.Auths;
-using DotNetApiStarterKit.Data.Interfaces;
-using DotNetApiStarterKit.Domain.Commons.Pagination;
-using DotNetApiStarterKit.Domain.Entities.Auths;
-using DotNetApiStarterKit.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using SmartCollegeComplaintPortal.Business.DTOs.Users;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
+using SmartCollegeComplaintPortal.Data.Interfaces;
+using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
+using SmartCollegeComplaintPortal.Domain.Enums;
 using System.Security.Cryptography;
 
-namespace DotNetApiStarterKit.Business.Services.Auths
+namespace SmartCollegeComplaintPortal.Business.Services.Auths
 {
     public class UserService : IUserService
     {

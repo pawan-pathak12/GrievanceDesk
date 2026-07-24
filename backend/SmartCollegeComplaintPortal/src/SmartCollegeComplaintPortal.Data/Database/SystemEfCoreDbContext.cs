@@ -1,7 +1,7 @@
-﻿using DotNetApiStarterKit.Domain.Entities.Auths;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Data.Database
+namespace SmartCollegeComplaintPortal.Data.Database
 {
     public class SystemEfCoreDbContext : DbContext
     {

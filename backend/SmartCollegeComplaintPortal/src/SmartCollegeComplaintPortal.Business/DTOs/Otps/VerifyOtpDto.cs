@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DotNetApiStarterKit.Business.DTOs.Otps
+namespace SmartCollegeComplaintPortal.Business.DTOs.Otps
 {
     public class VerifyOtpDto
     {

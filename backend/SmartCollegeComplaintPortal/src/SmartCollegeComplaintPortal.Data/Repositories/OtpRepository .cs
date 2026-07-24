@@ -1,11 +1,11 @@
 ﻿using Dapper;
-using DotNetApiStarterKit.Data.Database;
-using DotNetApiStarterKit.Data.Interfaces;
-using DotNetApiStarterKit.Domain.Commons.Pagination;
-using DotNetApiStarterKit.Domain.Entities.Auths;
 using Microsoft.Extensions.Logging;
+using SmartCollegeComplaintPortal.Data.Database;
+using SmartCollegeComplaintPortal.Data.Interfaces;
+using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Data.Repositories
+namespace SmartCollegeComplaintPortal.Data.Repositories
 {
     public class OtpRepository : IOtpRepository
     {

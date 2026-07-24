@@ -1,7 +1,7 @@
-﻿using DotNetApiStarterKit.Domain.Commons.Pagination;
-using DotNetApiStarterKit.Domain.Entities.Auths;
+﻿using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Data.Interfaces
+namespace SmartCollegeComplaintPortal.Data.Interfaces
 {
     public interface IOtpRepository
     {

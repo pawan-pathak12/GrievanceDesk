@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetApiStarterKit.Data\DotNetApiStarterKit.Data.csproj" />
-    <ProjectReference Include="..\DotNetApiStarterKit.Domain\DotNetApiStarterKit.Domain.csproj" />
+   
+    <ProjectReference Include="..\SmartCollegeComplaintPortal.Data\SmartCollegeComplaintPortal.Data.csproj" />
+    <ProjectReference Include="..\SmartCollegeComplaintPortal.Domain\SmartCollegeComplaintPortal.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

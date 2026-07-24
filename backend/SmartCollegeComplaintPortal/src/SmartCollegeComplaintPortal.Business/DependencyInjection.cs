@@ -1,16 +1,16 @@
-﻿using DotNetApiStarterKit.Business.Interfaces.Auths;
-using DotNetApiStarterKit.Business.Services.Auths;
-using DotNetApiStarterKit.Data;
-using DotNetApiStarterKit.Data.Database;
-using DotNetApiStarterKit.Domain.Entities.Auths;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
+using SmartCollegeComplaintPortal.Business.Services.Auths;
+using SmartCollegeComplaintPortal.Data;
+using SmartCollegeComplaintPortal.Data.Database;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Business
+namespace SmartCollegeComplaintPortal.Business
 {
     public static class DependencyInjection
     {

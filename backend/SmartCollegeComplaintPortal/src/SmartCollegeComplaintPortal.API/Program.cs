@@ -1,9 +1,9 @@
-using DotNetApiStarterKit.Api.Contracts;
-using DotNetApiStarterKit.Api.Extensions;
-using DotNetApiStarterKit.Business;
-using DotNetApiStarterKit.Business.Configurations;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using SmartCollegeComplaintPortal.API.Contracts;
+using SmartCollegeComplaintPortal.API.Extensions;
+using SmartCollegeComplaintPortal.Business;
+using SmartCollegeComplaintPortal.Business.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddSerilog();

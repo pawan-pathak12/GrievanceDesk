@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using DotNetApiStarterKit.Business.DTOs.Users;
-using DotNetApiStarterKit.Domain.Entities.Auths;
+using SmartCollegeComplaintPortal.Business.DTOs.Users;
+using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Business.Mapping
+namespace SmartCollegeComplaintPortal.Business.Mapping
 {
     public class UserProfile : Profile
     {

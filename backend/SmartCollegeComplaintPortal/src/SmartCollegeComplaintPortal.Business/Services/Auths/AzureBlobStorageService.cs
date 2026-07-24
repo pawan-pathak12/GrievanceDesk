@@ -1,10 +1,10 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using DotNetApiStarterKit.Business.Configurations;
-using DotNetApiStarterKit.Business.Interfaces.Auths;
 using Microsoft.Extensions.Options;
+using SmartCollegeComplaintPortal.Business.Configurations;
+using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
 
-namespace DotNetApiStarterKit.Business.Services.Auths
+namespace SmartCollegeComplaintPortal.Business.Services.Auths
 {
     public class AzureBlobStorageService : IFileStorageService
     {

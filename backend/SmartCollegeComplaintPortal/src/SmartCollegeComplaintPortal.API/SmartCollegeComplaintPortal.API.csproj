@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetApiStarterKit.Business\DotNetApiStarterKit.Business.csproj" />
+    <ProjectReference Include="..\SmartCollegeComplaintPortal.Business\SmartCollegeComplaintPortal.Business.csproj" />
+    <ProjectReference Include="..\SmartCollegeComplaintPortal.Domain\SmartCollegeComplaintPortal.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

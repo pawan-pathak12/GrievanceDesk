@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace DotNetApiStarterKit.Api.Middlewares
+namespace SmartCollegeComplaintPortal.API.Middlewares
 {
     public class SwaggerAuthMiddleware
     {

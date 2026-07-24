@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace DotNetApiStarterKit.Api.Extensions
+namespace SmartCollegeComplaintPortal.API.Extensions
 {
     public static class SeriloggerExtensions
     {

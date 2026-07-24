@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Domain.Constants
+﻿namespace SmartCollegeComplaintPortal.Domain.Constants
 {
     public class ClaimConstants
     {

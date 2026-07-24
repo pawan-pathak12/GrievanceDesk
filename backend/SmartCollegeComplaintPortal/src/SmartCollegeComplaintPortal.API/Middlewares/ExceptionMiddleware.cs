@@ -1,8 +1,7 @@
-﻿using DotNetApiStarterKit.Api.Contracts;
-using Microsoft.Data.SqlClient;
+﻿using SmartCollegeComplaintPortal.API.Contracts;
 using System.Text.Json;
 
-namespace DotNetApiStarterKit.Api.Middlewares
+namespace SmartCollegeComplaintPortal.API.Middlewares
 {
     public class ExceptionMiddleware
     {
@@ -41,7 +40,7 @@ namespace DotNetApiStarterKit.Api.Middlewares
                 InvalidDataException => (400, "The provided data is invalid."),
 
                 OperationCanceledException => (408, "The request was cancelled."),
-                SqlException => (500, "A internal server error occurred."),
+                //SqlException => (500, "A internal server error occurred."),
                 InvalidOperationException => (500, "An internal server error occurred."),
                 NotImplementedException => (501, "This feature is not yet available."),
                 _ => (500, "An unexpected error occurred.")

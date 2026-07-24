@@ -1,7 +1,7 @@
-using DotNetApiStarterKit.Domain.Enums;
+using SmartCollegeComplaintPortal.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace DotNetApiStarterKit.Business.DTOs.Users
+namespace SmartCollegeComplaintPortal.Business.DTOs.Users
 {
     public class UserResponseDto
     {

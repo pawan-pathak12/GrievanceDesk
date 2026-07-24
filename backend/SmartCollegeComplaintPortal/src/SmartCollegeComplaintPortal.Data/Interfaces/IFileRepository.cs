@@ -1,6 +1,6 @@
-﻿using DotNetApiStarterKit.Domain.Entities.Auths;
+﻿using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 
-namespace DotNetApiStarterKit.Data.Interfaces
+namespace SmartCollegeComplaintPortal.Data.Interfaces
 {
     public interface IFileRepository
     {

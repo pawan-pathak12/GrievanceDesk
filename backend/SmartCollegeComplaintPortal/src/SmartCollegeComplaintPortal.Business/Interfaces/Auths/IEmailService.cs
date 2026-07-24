@@ -1,4 +1,4 @@
-﻿namespace DotNetApiStarterKit.Business.Interfaces.Auths
+﻿namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
 {
     public interface IEmailService
     {
