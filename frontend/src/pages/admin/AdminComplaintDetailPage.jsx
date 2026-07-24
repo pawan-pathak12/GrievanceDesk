@@ -6,13 +6,22 @@ import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
-import { StatusLabels, ComplaintStatus } from '../../utils/enums';
+import { ComplaintStatus, StatusOptions, formatDateTime, formatStatus, normalizeStatus } from '../../utils/enums';
+
+function renderUpdate(update) {
+  if (update.updateType === 'StatusChanged') {
+    return `${formatStatus(update.oldStatus)} to ${formatStatus(update.newStatus)}`;
+  }
+  if (update.noteText) return update.noteText;
+  return 'Complaint activity recorded';
+}
 
 export default function AdminComplaintDetailPage() {
   const { id } = useParams();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [noteText, setNoteText] = useState('');
+  const [irrelevantReason, setIrrelevantReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const toast = useToast();
 
@@ -28,142 +37,130 @@ export default function AdminComplaintDetailPage() {
     setLoading(false);
   }
 
-  async function handleStatusChange(newStatus) {
+  async function runAction(action, successMessage) {
     setActionLoading(true);
-    const res = await adminApi.updateStatus(id, newStatus);
+    const res = await action();
     setActionLoading(false);
     if (res.isSuccess) {
-      toast.success('Status updated successfully');
+      toast.success(successMessage);
       loadComplaint();
-    } else {
-      toast.error(res.errors?.[0] || 'Failed to update status');
+      return true;
     }
+    toast.error(res.errors?.[0] || 'Action failed');
+    return false;
+  }
+
+  async function handleStatusChange(newStatus) {
+    await runAction(() => adminApi.updateStatus(id, newStatus), 'Status updated successfully');
   }
 
   async function handleAddNote(e) {
     e.preventDefault();
     if (!noteText.trim()) return;
-    setActionLoading(true);
-    const res = await adminApi.addNote(id, noteText.trim());
-    setActionLoading(false);
-    if (res.isSuccess) {
-      toast.success('Note added successfully');
-      setNoteText('');
-      loadComplaint();
-    } else {
-      toast.error(res.errors?.[0] || 'Failed to add note');
-    }
+    const ok = await runAction(() => adminApi.addNote(id, noteText.trim()), 'Note added successfully');
+    if (ok) setNoteText('');
   }
 
   async function handleMarkDuplicate() {
-    setActionLoading(true);
-    const res = await adminApi.markDuplicate(id, true);
-    setActionLoading(false);
-    if (res.isSuccess) {
-      toast.success('Marked as duplicate');
-      loadComplaint();
-    } else {
-      toast.error(res.errors?.[0] || 'Failed to mark duplicate');
-    }
+    await runAction(() => adminApi.markDuplicate(id, true), 'Marked as duplicate');
   }
 
-  async function handleMarkIrrelevant() {
-    const reason = prompt('Enter reason for marking as irrelevant:');
-    if (!reason) return;
-    setActionLoading(true);
-    const res = await adminApi.markIrrelevant(id, reason);
-    setActionLoading(false);
-    if (res.isSuccess) {
-      toast.success('Marked as irrelevant');
-      loadComplaint();
-    } else {
-      toast.error(res.errors?.[0] || 'Failed to mark irrelevant');
-    }
+  async function handleMarkIrrelevant(e) {
+    e.preventDefault();
+    const ok = await runAction(
+      () => adminApi.markIrrelevant(id, irrelevantReason.trim() || 'Marked irrelevant by administrator'),
+      'Marked as irrelevant'
+    );
+    if (ok) setIrrelevantReason('');
   }
 
   if (loading) return <LoadingSpinner />;
-  if (!complaint) return <div className="empty-state"><p>Complaint not found.</p></div>;
+  if (!complaint) return <div className="empty-state"><strong>Complaint not found</strong></div>;
+
+  const currentStatus = normalizeStatus(complaint.status);
 
   return (
     <div>
-      <Link to={ROUTES.ADMIN_COMPLAINTS} className="back-link">← Back to All Complaints</Link>
+      <Link to={ROUTES.ADMIN_COMPLAINTS} className="back-link">Back to All Complaints</Link>
 
-      <div className="detail-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+      <div className="detail-card detail-hero">
+        <div className="detail-heading">
           <div>
-            <h2>#{String(complaint.id).padStart(3, '0')} — {complaint.title}</h2>
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <span className="eyebrow">Case #{String(complaint.id).padStart(3, '0')}</span>
+            <h1>{complaint.title}</h1>
+            <div className="badge-row">
               <CategoryBadge category={complaint.category} />
               <StatusBadge status={complaint.status} />
-              {complaint.isDuplicate && <span className="badge" style={{ background: '#FEF3C7', color: '#92400E' }}>Duplicate</span>}
+              {complaint.isDuplicate && <span className="badge badge-warning">Duplicate</span>}
+              {complaint.isEdited && <span className="badge badge-warning">Edited</span>}
             </div>
           </div>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-            {new Date(complaint.createdAt).toLocaleString()}
-          </span>
+          <div className="detail-meta">
+            <span>Created</span>
+            <strong>{formatDateTime(complaint.createdAt)}</strong>
+          </div>
         </div>
 
-        <div style={{ marginTop: 16 }}>
+        <div className="detail-section">
           <div className="detail-label">Description</div>
-          <p style={{ marginTop: 4, lineHeight: 1.7 }}>{complaint.description}</p>
+          <p>{complaint.description}</p>
         </div>
 
-        {/* Admin Actions */}
         <div className="admin-actions">
-          <label style={{ fontSize: '0.8rem', fontWeight: 600, marginRight: 8, alignSelf: 'center' }}>Change Status:</label>
-          {Object.entries(ComplaintStatus).filter(([, v]) => v !== complaint.status).map(([label, val]) => (
-            <button key={val} className="btn-action" onClick={() => handleStatusChange(val)} disabled={actionLoading}>
-              → {label}
-            </button>
-          ))}
+          <div className="action-group">
+            <label>Change Status</label>
+            <div className="action-buttons">
+              {StatusOptions.filter((opt) => opt.value !== currentStatus && opt.value !== ComplaintStatus.Irrelevant).map((opt) => (
+                <button key={opt.value} className="btn-action" onClick={() => handleStatusChange(opt.value)} disabled={actionLoading}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <button className="btn-action" onClick={handleMarkDuplicate} disabled={actionLoading || complaint.isDuplicate}>
-            🔁 Duplicate
-          </button>
-          <button className="btn-action danger" onClick={handleMarkIrrelevant} disabled={actionLoading}>
-            ⛔ Irrelevant
+            Mark Duplicate
           </button>
         </div>
 
-        {/* Add Note */}
         <form className="note-form" onSubmit={handleAddNote}>
           <input
             type="text"
-            placeholder="Add a resolution note..."
+            placeholder="Add an internal resolution note"
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
+            minLength={3}
+            maxLength={2000}
           />
           <button type="submit" disabled={actionLoading || !noteText.trim()}>Add Note</button>
         </form>
+
+        <form className="note-form danger-form" onSubmit={handleMarkIrrelevant}>
+          <input
+            type="text"
+            placeholder="Reason for marking irrelevant"
+            value={irrelevantReason}
+            onChange={(e) => setIrrelevantReason(e.target.value)}
+            maxLength={2000}
+          />
+          <button type="submit" disabled={actionLoading || currentStatus === ComplaintStatus.Irrelevant}>
+            Mark Irrelevant
+          </button>
+        </form>
       </div>
 
-      {/* Timeline */}
       <div className="detail-card">
         <h2>Activity Timeline</h2>
         {(!complaint.updates || complaint.updates.length === 0) ? (
-          <p style={{ color: 'var(--text-light)', marginTop: 8 }}>No activity yet.</p>
+          <p className="muted-text">No activity has been recorded yet.</p>
         ) : (
-          <div className="timeline" style={{ marginTop: 16 }}>
+          <div className="timeline">
             {complaint.updates.map((u, i) => (
               <div className="timeline-item" key={u.id || i}>
                 <div className="timeline-item-header">
-                  <span className="timeline-item-type">
-                    {u.updateType === 0 && 'Status Changed'}
-                    {u.updateType === 1 && '📝 Note Added'}
-                    {u.updateType === 2 && 'Marked as Duplicate'}
-                    {u.updateType === 3 && 'Marked as Irrelevant'}
-                    {u.updateType === 4 && 'Complaint Edited'}
-                    {u.updateType !== 0 && u.updateType !== 1 && u.updateType !== 2 && u.updateType !== 3 && u.updateType !== 4 && `Update (${u.updateType})`}
-                  </span>
-                  <span className="timeline-item-date">
-                    {new Date(u.createdAt).toLocaleString()}
-                  </span>
+                  <span className="timeline-item-type">{u.updateType || 'Update'}</span>
+                  <span className="timeline-item-date">{formatDateTime(u.createdAt)}</span>
                 </div>
-                <div className="timeline-item-body">
-                  {u.updateType === 0 && (
-                    <span>{StatusLabels[u.oldStatus] || '—'} → {StatusLabels[u.newStatus] || '—'}</span>
-                  )}
-                  {u.noteText && <p>{u.noteText}</p>}
-                </div>
+                <div className="timeline-item-body">{renderUpdate(u)}</div>
               </div>
             ))}
           </div>
