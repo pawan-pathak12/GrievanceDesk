@@ -227,11 +227,6 @@ namespace SmartCollegeComplaintPortal.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsForwarded")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)

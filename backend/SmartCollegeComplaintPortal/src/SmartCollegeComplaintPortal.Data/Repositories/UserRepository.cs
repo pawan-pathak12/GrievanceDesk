@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.Extensions.Logging;
 using SmartCollegeComplaintPortal.Data.Database;
 using SmartCollegeComplaintPortal.Data.Interfaces;
@@ -22,9 +22,15 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
 
         public async Task<int> AddAsync(User user)
         {
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                user.Username = "TEMP_" + Guid.NewGuid().ToString("N")[..8];
+            }
+
             const string sql = @"
                 INSERT INTO Users
                 (
+                    Username,
                     FirstName,
                     LastName,
                     Email,
@@ -36,6 +42,7 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 )
                 VALUES
                 (
+                    @Username,
                     @FirstName,
                     @LastName,
                     @Email,
@@ -56,9 +63,18 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
 
             var userId = await connection.QuerySingleAsync<int>(sql, user);
 
+            if (user.Username.StartsWith("TEMP_"))
+            {
+                var finalUsername = $"User_{1000 + userId}";
+                await connection.ExecuteAsync(
+                    "UPDATE Users SET Username = @Username WHERE UserId = @UserId;",
+                    new { Username = finalUsername, UserId = userId });
+                user.Username = finalUsername;
+            }
+
             _logger.LogInformation(
-                "New user created with Id {UserId}",
-                userId);
+                "New user created with Id {UserId} and Username {Username}",
+                userId, user.Username);
 
             return userId;
         }
