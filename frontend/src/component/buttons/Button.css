@@ -1,0 +1,212 @@
+@import "../../styles/Variables.css";
+
+/* ==========================================
+   BASE BUTTON
+========================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  height: var(--btn-height-md);
+  padding: 0 var(--btn-padding-x-md);
+
+  border: var(--border-thin) solid transparent;
+  border-radius: var(--radius-md);
+
+  background: transparent;
+  color: var(--text-primary);
+
+  font-family: var(--font-family);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+
+  white-space: nowrap;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+/* Hover */
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Active */
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Focus */
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* Disabled */
+
+.btn:disabled {
+  background: var(--bg-disabled);
+  border-color: var(--border-light);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==========================================
+   PRIMARY BUTTON
+========================================== */
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--text-white);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--color-primary-active);
+  border-color: var(--color-primary-active);
+}
+
+/* ==========================================
+   SECONDARY BUTTON
+========================================== */
+
+.btn-secondary {
+  background: var(--color-neutral-100);
+  color: var(--text-primary);
+  border-color: var(--color-neutral-100);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-neutral-200);
+  border-color: var(--color-neutral-200);
+}
+
+.btn-secondary:active:not(:disabled) {
+  background: var(--color-neutral-300);
+  border-color: var(--color-neutral-300);
+}
+
+/* ==========================================
+   OUTLINED BUTTON
+========================================== */
+
+.btn-outlined {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-outlined:hover:not(:disabled) {
+  background: var(--color-primary-lighter);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-outlined:active:not(:disabled) {
+  background: var(--color-primary-light);
+}
+
+/* ==========================================
+   INVERTED BUTTON
+========================================== */
+
+.btn-inverted {
+  background: var(--color-neutral-800);
+  color: var(--text-white);
+  border-color: var(--color-neutral-800);
+}
+
+.btn-inverted:hover:not(:disabled) {
+  background: var(--color-neutral-700);
+  border-color: var(--color-neutral-700);
+}
+
+.btn-inverted:active:not(:disabled) {
+  background: var(--color-neutral-900);
+  border-color: var(--color-neutral-900);
+}
+
+/* ==========================================
+   BUTTON SIZES
+========================================== */
+
+.btn-sm {
+  height: var(--btn-height-sm);
+  padding: 0 var(--btn-padding-x-sm);
+  font-size: var(--fs-xs);
+}
+
+.btn-md {
+  height: var(--btn-height-md);
+  padding: 0 var(--btn-padding-x-md);
+  font-size: var(--fs-sm);
+}
+
+.btn-lg {
+  height: var(--btn-height-lg);
+  padding: 0 var(--btn-padding-x-lg);
+  font-size: var(--fs-md);
+}
+
+/* ==========================================
+   FULL WIDTH
+========================================== */
+
+.btn-block {
+  width: 100%;
+}
+
+/* ==========================================
+   ICON BUTTON
+========================================== */
+
+.btn-icon {
+  padding: 0;
+  width: var(--btn-height-md);
+  height: var(--btn-height-md);
+}
+
+.btn-icon svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* ==========================================
+   ICON SPACING
+========================================== */
+
+.btn svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+.btn svg:first-child {
+  margin-right: var(--space-1);
+}
+
+.btn svg:last-child {
+  margin-left: var(--space-1);
+}
