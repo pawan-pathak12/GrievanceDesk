@@ -397,13 +397,39 @@
 }
 
 .complaint-form-page {
-  max-width: 900px;
+  width: min(100%, 760px);
+  margin: 0 auto;
 }
 
-.form-card {
+.complaint-form-header {
+  margin: 24px 0 22px;
+}
+
+.complaint-form-header h1 {
+  margin: 0 0 6px;
+  color: var(--text-dark);
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.complaint-form-header p {
+  max-width: 660px;
+  margin: 0;
+  color: var(--text-gray);
+  font-size: 0.88rem;
+}
+
+.complaint-form {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.complaint-form .form-card {
   display: grid;
-  gap: 20px;
-  padding: 24px;
+  gap: 18px;
+  padding: 24px 26px 20px;
 }
 
 .form-group {
@@ -416,28 +442,39 @@
   font-weight: 800;
 }
 
-.form-card input,
-.form-card select,
-.form-card textarea,
+.complaint-form .form-label-row {
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.form-counter {
+  color: var(--text-gray);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.complaint-form input,
+.complaint-form select,
+.complaint-form textarea,
 .filter-field input,
 .filter-field select,
 .note-form input {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #ffffff;
+  background: #f8fafc;
   color: var(--text-dark);
   padding: 11px 12px;
 }
 
-.form-card textarea {
-  min-height: 180px;
+.complaint-form textarea {
+  min-height: 150px;
   resize: vertical;
 }
 
-.form-card input:focus,
-.form-card select:focus,
-.form-card textarea:focus,
+.complaint-form input:focus,
+.complaint-form select:focus,
+.complaint-form textarea:focus,
 .filter-field input:focus,
 .filter-field select:focus,
 .note-form input:focus {
@@ -462,7 +499,32 @@
 
 .form-footer {
   justify-content: flex-end;
-  margin-top: 18px;
+  margin-top: 0;
+  padding: 0 26px 20px;
+}
+
+.complaint-form-tips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 18px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  color: var(--text-gray);
+  font-size: 0.72rem;
+}
+
+.complaint-form-tips strong {
+  color: var(--text-body);
+}
+
+.complaint-form-tips span::before {
+  content: '-';
+  margin-right: 6px;
+  color: var(--primary);
+  font-weight: 800;
 }
 
 .btn-submit,

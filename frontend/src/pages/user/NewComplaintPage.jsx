@@ -39,16 +39,20 @@ export default function NewComplaintPage() {
     <div className="complaint-form-page">
       <Link to={ROUTES.MY_COMPLAINTS} className="back-link">Back to complaints</Link>
 
-      <div className="page-header">
+      <div className="complaint-form-header">
         <h1>Submit New Complaint</h1>
-        <p>Provide enough context for the right team to understand and resolve the issue.</p>
+        <p>Provide enough context for the right team to understand and resolve the issue. Your detailed input helps us expedite the resolution process.</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form className="complaint-form" onSubmit={handleSubmit}>
         <div className="form-card">
           <div className="form-group">
-            <label>Complaint Title</label>
+            <div className="form-label-row">
+              <label htmlFor="complaint-title">Complaint Title</label>
+              <span className="form-counter">{form.title.length}/200 characters</span>
+            </div>
             <input
+              id="complaint-title"
               type="text"
               name="title"
               placeholder="Briefly summarize the issue"
@@ -58,12 +62,11 @@ export default function NewComplaintPage() {
               minLength={5}
               maxLength={200}
             />
-            <div className="form-hint">{form.title.length}/200 characters</div>
           </div>
 
           <div className="form-group">
-            <label>Category</label>
-            <select name="category" value={form.category} onChange={handleChange} required>
+            <label htmlFor="complaint-category">Category</label>
+            <select id="complaint-category" name="category" value={form.category} onChange={handleChange} required>
               <option value="">Select a category</option>
               {CategoryOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -72,8 +75,12 @@ export default function NewComplaintPage() {
           </div>
 
           <div className="form-group">
-            <label>Full Description</label>
+            <div className="form-label-row">
+              <label htmlFor="complaint-description">Full Description</label>
+              <span className="form-counter">{form.description.length}/5000 characters</span>
+            </div>
             <textarea
+              id="complaint-description"
               name="description"
               placeholder="Include dates, locations, affected services, and any steps already taken"
               value={form.description}
@@ -82,7 +89,6 @@ export default function NewComplaintPage() {
               minLength={10}
               maxLength={5000}
             />
-            <div className="form-hint">{form.description.length}/5000 characters</div>
           </div>
         </div>
 
@@ -95,6 +101,13 @@ export default function NewComplaintPage() {
           </button>
         </div>
       </form>
+
+      <aside className="complaint-form-tips">
+        <strong>Submission Tips</strong>
+        <span>Be as specific as possible</span>
+        <span>Attach screenshots if relevant</span>
+        <span>Note the exact time of the incident</span>
+      </aside>
     </div>
   );
 }
