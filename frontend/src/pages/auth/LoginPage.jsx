@@ -22,7 +22,6 @@ export default function LoginPage() {
 
     setLoading(true);
     const res = await authApi.login(email, password);
-    setLoading(false);
 
     if (res.isSuccess) {
       const token = res.data?.accessToken || res.data?.token;
@@ -32,17 +31,19 @@ export default function LoginPage() {
         if (meRes.isSuccess) {
           login(token, meRes.data);
           const role = meRes.data?.role;
-          if (role === 'Admin' || role === 0) {
-            navigate(ROUTES.ADMIN_DASHBOARD);
-          } else {
-            navigate(ROUTES.DASHBOARD);
-          }
+          navigate(role === 'Admin' || role === 0 ? ROUTES.ADMIN_DASHBOARD : ROUTES.DASHBOARD);
+          toast.success('Logged in successfully');
+        } else {
+          toast.error(meRes.errors?.[0] || 'Unable to load profile');
         }
+      } else {
+        toast.error('Login response did not include an access token');
       }
-      toast.success('Logged in successfully');
     } else {
       toast.error(res.errors?.[0] || 'Login failed');
     }
+
+    setLoading(false);
   }
 
   return (
@@ -60,7 +61,7 @@ export default function LoginPage() {
             <div className="form-group">
               <label>Email Address</label>
               <div className="input-wrapper">
-                <span className="input-icon">✉️</span>
+                <span className="input-icon">EM</span>
                 <input
                   type="email"
                   placeholder="name@organization.com"
@@ -77,33 +78,33 @@ export default function LoginPage() {
                 <Link to="/forgot-password">Forgot password?</Link>
               </div>
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon">PW</span>
                 <input
                   type={showPass ? 'text' : 'password'}
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button type="button" className="toggle-password" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? '🙈' : '👁️'}
+                  {showPass ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In →'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
           <div className="auth-divider">or</div>
 
           <div className="auth-footer">
-            Don't have an account? <Link to={ROUTES.REGISTER_EMAIL}>Create account</Link>
+            Do not have an account? <Link to={ROUTES.REGISTER_EMAIL}>Create account</Link>
           </div>
 
           <div className="auth-copyright">
-            © 2026 GrievanceDesk. All rights reserved.
+            Copyright 2026 GrievanceDesk. All rights reserved.
           </div>
         </div>
       </div>

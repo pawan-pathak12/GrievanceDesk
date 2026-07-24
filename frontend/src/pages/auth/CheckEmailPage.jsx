@@ -42,14 +42,14 @@ export default function CheckEmailPage() {
 
           <div className="auth-form-header">
             <h2>Create Account</h2>
-            <p>Step 1 of 3 — Verify your organization email</p>
+            <p>Step 1 of 3 - Verify your organization email</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Organization Email</label>
               <div className="input-wrapper">
-                <span className="input-icon">✉️</span>
+                <span className="input-icon">EM</span>
                 <input
                   type="email"
                   placeholder="name@organization.com"
@@ -61,7 +61,7 @@ export default function CheckEmailPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Sending OTP...' : 'Send Verification Code →'}
+              {loading ? 'Sending OTP...' : 'Send Verification Code'}
             </button>
           </form>
 

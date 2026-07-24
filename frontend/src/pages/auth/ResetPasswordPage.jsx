@@ -15,10 +15,11 @@ export default function ResetPasswordPage() {
   const location = useLocation();
   const toast = useToast();
   const email = location.state?.email;
+  const verificationToken = location.state?.verificationToken;
 
   useEffect(() => {
-    if (!email) navigate('/forgot-password', { replace: true });
-  }, [email, navigate]);
+    if (!email || !verificationToken) navigate('/forgot-password', { replace: true });
+  }, [email, verificationToken, navigate]);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,18 +37,17 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
-    // Use create-password endpoint to reset (reuses the same backend flow)
     const res = await authApi.createPassword({
       email,
+      verificationToken,
       firstName: '',
       lastName: '',
       password: form.password,
-      confirmPassword: form.confirmPassword,
     });
     setLoading(false);
 
     if (res.isSuccess) {
-      toast.success('Password reset successfully! Please sign in.');
+      toast.success('Password reset successfully. Please sign in.');
       navigate(ROUTES.LOGIN);
     } else {
       toast.error(res.errors?.[0] || 'Password reset failed');
@@ -68,24 +68,24 @@ export default function ResetPasswordPage() {
 
           <div className="auth-form-header">
             <h2>Reset Password</h2>
-            <p>Step 3 of 3 — Create your new password</p>
+            <p>Step 3 of 3 - Create your new password</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>New Password</label>
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon">PW</span>
                 <input
                   type={showPass ? 'text' : 'password'}
                   name="password"
-                  placeholder="Min. 6 characters"
+                  placeholder="Minimum 6 characters"
                   value={form.password}
                   onChange={handleChange}
                   required
                 />
                 <button type="button" className="toggle-password" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? '🙈' : '👁️'}
+                  {showPass ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function ResetPasswordPage() {
             <div className="form-group">
               <label>Confirm New Password</label>
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon">PW</span>
                 <input
                   type={showConfirm ? 'text' : 'password'}
                   name="confirmPassword"
@@ -103,20 +103,20 @@ export default function ResetPasswordPage() {
                   required
                 />
                 <button type="button" className="toggle-password" onClick={() => setShowConfirm(!showConfirm)}>
-                  {showConfirm ? '🙈' : '👁️'}
+                  {showConfirm ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Resetting...' : 'Reset Password →'}
+              {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
 
           <div className="auth-divider" />
 
           <div className="auth-footer">
-            <Link to={ROUTES.LOGIN}>← Back to Sign in</Link>
+            <Link to={ROUTES.LOGIN}>Back to Sign in</Link>
           </div>
         </div>
       </div>

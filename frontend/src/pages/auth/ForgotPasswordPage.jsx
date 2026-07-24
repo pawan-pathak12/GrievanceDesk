@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
       toast.success('Verification code sent to your email');
       navigate('/forgot-password/verify', { state: { email, forgot: true } });
     } else {
-      toast.error(res.errors?.[0] || 'Email not found');
+      toast.error(res.errors?.[0] || 'Unable to send reset code');
     }
   }
 
@@ -42,14 +42,14 @@ export default function ForgotPasswordPage() {
 
           <div className="auth-form-header">
             <h2>Forgot Password</h2>
-            <p>Step 1 of 3 — Enter your email to receive a reset code</p>
+            <p>Step 1 of 3 - Enter your email to receive a reset code</p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Email Address</label>
               <div className="input-wrapper">
-                <span className="input-icon">✉️</span>
+                <span className="input-icon">EM</span>
                 <input
                   type="email"
                   placeholder="name@organization.com"
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Sending...' : 'Send Reset Code →'}
+              {loading ? 'Sending...' : 'Send Reset Code'}
             </button>
           </form>
 

@@ -21,11 +21,11 @@ export default function VerifyOtpPage() {
   }, [email, navigate]);
 
   function handleChange(index, value) {
-    if (value.length > 1) value = value[0];
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+    const nextValue = value.replace(/\D/g, '').slice(0, 1);
+    const nextOtp = [...otp];
+    nextOtp[index] = nextValue;
+    setOtp(nextOtp);
+    if (nextValue && index < 5) inputRefs.current[index + 1]?.focus();
   }
 
   function handleKeyDown(index, e) {
@@ -53,20 +53,21 @@ export default function VerifyOtpPage() {
     setLoading(false);
 
     if (res.isSuccess) {
-      toast.success(res.data?.message || 'OTP verified');
+      toast.success('Code verified');
+      const verificationToken = res.data?.verificationToken;
       if (isForgot) {
-        navigate('/forgot-password/reset', { state: { email } });
+        navigate('/forgot-password/reset', { state: { email, verificationToken } });
       } else {
-        navigate(ROUTES.REGISTER_PASSWORD, { state: { email } });
+        navigate(ROUTES.REGISTER_PASSWORD, { state: { email, verificationToken } });
       }
     } else {
-      toast.error(res.errors?.[0] || 'Invalid OTP');
+      toast.error(res.errors?.[0] || 'Invalid code');
     }
   }
 
   async function handleResend() {
     const res = await authApi.checkEmail(email);
-    if (res.isSuccess) toast.success('OTP resent to your email');
+    if (res.isSuccess) toast.success('Code resent to your email');
     else toast.error(res.errors?.[0] || 'Failed to resend');
   }
 
@@ -83,8 +84,8 @@ export default function VerifyOtpPage() {
           </div>
 
           <div className="auth-form-header">
-            <h2>Verify your Email</h2>
-            <p>Step 2 of 3 — Enter the 6-digit code sent to <strong>{email}</strong></p>
+            <h2>Verify your email</h2>
+            <p>Step 2 of 3 - Enter the 6-digit code sent to <strong>{email}</strong></p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -105,13 +106,12 @@ export default function VerifyOtpPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
-              {loading ? 'Verifying...' : 'Verify & Continue →'}
+              {loading ? 'Verifying...' : 'Verify and Continue'}
             </button>
           </form>
 
           <div className="resend-link">
-            Didn't receive a code?{' '}
-            <button onClick={handleResend}>Resend code</button>
+            Did not receive a code? <button onClick={handleResend}>Resend code</button>
           </div>
         </div>
       </div>

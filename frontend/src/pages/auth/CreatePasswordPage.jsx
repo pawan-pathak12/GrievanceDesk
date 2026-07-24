@@ -15,10 +15,11 @@ export default function CreatePasswordPage() {
   const location = useLocation();
   const toast = useToast();
   const email = location.state?.email;
+  const verificationToken = location.state?.verificationToken;
 
   useEffect(() => {
-    if (!email) navigate(ROUTES.REGISTER_EMAIL, { replace: true });
-  }, [email, navigate]);
+    if (!email || !verificationToken) navigate(ROUTES.REGISTER_EMAIL, { replace: true });
+  }, [email, verificationToken, navigate]);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,15 +39,15 @@ export default function CreatePasswordPage() {
     setLoading(true);
     const res = await authApi.createPassword({
       email,
+      verificationToken,
       firstName: form.firstName,
       lastName: form.lastName,
       password: form.password,
-      confirmPassword: form.confirmPassword,
     });
     setLoading(false);
 
     if (res.isSuccess) {
-      toast.success('Account created! Please sign in.');
+      toast.success('Account created. Please sign in.');
       navigate(ROUTES.LOGIN);
     } else {
       toast.error(res.errors?.[0] || 'Registration failed');
@@ -66,8 +67,8 @@ export default function CreatePasswordPage() {
           </div>
 
           <div className="auth-form-header">
-            <h2>Complete Setup</h2>
-            <p>Step 3 of 3 — Set your name and password</p>
+            <h2>Complete setup</h2>
+            <p>Step 3 of 3 - Set your name and password</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -75,14 +76,14 @@ export default function CreatePasswordPage() {
               <div className="form-group">
                 <label>First Name</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">👤</span>
+                  <span className="input-icon">FN</span>
                   <input type="text" name="firstName" placeholder="John" value={form.firstName} onChange={handleChange} required />
                 </div>
               </div>
               <div className="form-group">
                 <label>Last Name</label>
                 <div className="input-wrapper">
-                  <span className="input-icon">👤</span>
+                  <span className="input-icon">LN</span>
                   <input type="text" name="lastName" placeholder="Doe" value={form.lastName} onChange={handleChange} required />
                 </div>
               </div>
@@ -91,10 +92,10 @@ export default function CreatePasswordPage() {
             <div className="form-group">
               <label>Password</label>
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
-                <input type={showPass ? 'text' : 'password'} name="password" placeholder="Min. 6 characters" value={form.password} onChange={handleChange} required />
+                <span className="input-icon">PW</span>
+                <input type={showPass ? 'text' : 'password'} name="password" placeholder="Minimum 6 characters" value={form.password} onChange={handleChange} required />
                 <button type="button" className="toggle-password" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? '🙈' : '👁️'}
+                  {showPass ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
@@ -102,16 +103,16 @@ export default function CreatePasswordPage() {
             <div className="form-group">
               <label>Confirm Password</label>
               <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
+                <span className="input-icon">PW</span>
                 <input type={showConfirm ? 'text' : 'password'} name="confirmPassword" placeholder="Re-enter password" value={form.confirmPassword} onChange={handleChange} required />
                 <button type="button" className="toggle-password" onClick={() => setShowConfirm(!showConfirm)}>
-                  {showConfirm ? '🙈' : '👁️'}
+                  {showConfirm ? 'Hide' : 'Show'}
                 </button>
               </div>
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Creating account...' : 'Complete Registration →'}
+              {loading ? 'Creating account...' : 'Complete Registration'}
             </button>
           </form>
 

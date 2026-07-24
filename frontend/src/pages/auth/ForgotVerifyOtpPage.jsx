@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
-import { ROUTES } from '../../utils/routes';
 import AuthBrand from '../../components/auth/AuthBrand';
 import '../../Styles/auth.css';
 
@@ -20,11 +19,11 @@ export default function ForgotVerifyOtpPage() {
   }, [email, navigate]);
 
   function handleChange(index, value) {
-    if (value.length > 1) value = value[0];
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+    const nextValue = value.replace(/\D/g, '').slice(0, 1);
+    const nextOtp = [...otp];
+    nextOtp[index] = nextValue;
+    setOtp(nextOtp);
+    if (nextValue && index < 5) inputRefs.current[index + 1]?.focus();
   }
 
   function handleKeyDown(index, e) {
@@ -53,7 +52,7 @@ export default function ForgotVerifyOtpPage() {
 
     if (res.isSuccess) {
       toast.success('Code verified successfully');
-      navigate('/forgot-password/reset', { state: { email } });
+      navigate('/forgot-password/reset', { state: { email, verificationToken: res.data?.verificationToken } });
     } else {
       toast.error(res.errors?.[0] || 'Invalid code');
     }
@@ -79,7 +78,7 @@ export default function ForgotVerifyOtpPage() {
 
           <div className="auth-form-header">
             <h2>Verify Code</h2>
-            <p>Step 2 of 3 — Enter the 6-digit code sent to <strong>{email}</strong></p>
+            <p>Step 2 of 3 - Enter the 6-digit code sent to <strong>{email}</strong></p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -100,13 +99,12 @@ export default function ForgotVerifyOtpPage() {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
-              {loading ? 'Verifying...' : 'Verify & Continue →'}
+              {loading ? 'Verifying...' : 'Verify and Continue'}
             </button>
           </form>
 
           <div className="resend-link">
-            Didn't receive a code?{' '}
-            <button onClick={handleResend}>Resend code</button>
+            Did not receive a code? <button onClick={handleResend}>Resend code</button>
           </div>
         </div>
       </div>
