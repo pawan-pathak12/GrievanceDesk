@@ -239,13 +239,11 @@ CREATE TABLE Complaints (
     Title           NVARCHAR(200) NOT NULL,
     Description     NVARCHAR(MAX) NOT NULL,
     Category        INT NOT NULL DEFAULT 0,
-    Location        NVARCHAR(200) NOT NULL,
     Status          INT NOT NULL DEFAULT 0,            -- Pending=0
     IsDuplicate     BIT NOT NULL DEFAULT 0,
-    IsForwarded     BIT NOT NULL DEFAULT 0,
     IsEdited        BIT NOT NULL DEFAULT 0,
+    EditedAt        datetime2 not null , 
     CreatedAt       DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-    UpdatedAt       DATETIME2 NULL,
 
     CONSTRAINT FK_Complaints_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
