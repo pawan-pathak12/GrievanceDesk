@@ -47,7 +47,7 @@ export default function ForgotVerifyOtpPage() {
     if (code.length !== 6) return;
 
     setLoading(true);
-    const res = await authApi.verifyOtp(email, code);
+    const res = await authApi.verifyPasswordResetOtp(email, code);
     setLoading(false);
 
     if (res.isSuccess) {
@@ -59,7 +59,7 @@ export default function ForgotVerifyOtpPage() {
   }
 
   async function handleResend() {
-    const res = await authApi.checkEmail(email);
+    const res = await authApi.requestPasswordReset(email);
     if (res.isSuccess) toast.success('Code resent to your email');
     else toast.error(res.errors?.[0] || 'Failed to resend');
   }

@@ -109,6 +109,77 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
 
         #endregion
 
+        #region Forgot Password Flow
+
+        public async Task<Result> RequestPasswordResetAsync(CheckEmailDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                return Result.Failure("Email is required.");
+            }
+
+            return await _otpService.GenerateForPasswordResetAsync(new GenerateOtpDto
+            {
+                Email = dto.Email.Trim().ToLowerInvariant()
+            });
+        }
+
+        public async Task<Result> VerifyPasswordResetOtpAsync(VerifyOtpDto dto)
+        {
+            var result = await _otpService.VerifyAsync(dto);
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            var verificationToken = _tokenService.GeneratePasswordResetToken(dto.Email);
+
+            _logger.LogInformation("Password reset OTP verified. Reset token issued for Email: {Email}", dto.Email);
+
+            return Result.Success(new
+            {
+                verificationToken
+            });
+        }
+
+        public async Task<Result> ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            var verificationToken = dto.VerificationToken?.Trim();
+
+            if (verificationToken?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                verificationToken = verificationToken.Substring("Bearer ".Length).Trim();
+            }
+
+            var isValidToken = _tokenService.TryValidatePasswordResetToken(verificationToken!, out var tokenEmail);
+            if (!isValidToken || !string.Equals(tokenEmail, dto.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("Password reset failed. Invalid or mismatched reset token. Email: {Email}", dto.Email);
+                return Result.Unauthorized("Invalid or expired password reset token.");
+            }
+
+            var user = await _userRepository.GetByEmailAddressAsync(tokenEmail!);
+            if (user == null || !user.IsActive)
+            {
+                _logger.LogWarning("Password reset failed. User not found or inactive. Email: {Email}", tokenEmail);
+                return Result.NotFound("No active account was found for this email.");
+            }
+
+            var newPasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+            var updated = await _userRepository.UpdatePasswordAsync(user.UserId, newPasswordHash);
+            if (!updated)
+            {
+                _logger.LogWarning("Password reset failed in repository. UserId: {UserId}", user.UserId);
+                return Result.Failure("Password reset failed. Please try again later.");
+            }
+
+            _logger.LogInformation("Password reset successfully. UserId: {UserId}", user.UserId);
+
+            return Result.Success("Password reset successfully.");
+        }
+
+        #endregion
+
         #region Login
 
         public async Task<AuthResult> LoginAsync(LoginDto dto)

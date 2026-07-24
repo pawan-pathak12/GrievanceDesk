@@ -15,6 +15,7 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
         private readonly IConfiguration _configuration;
         private readonly ILogger<TokenService> _logger;
         private const string VerificationPurpose = "otp_verified";
+        private const string PasswordResetPurpose = "password_reset";
         private const int VerificationTokenExpiryMinutes = 10;
 
         public TokenService(IConfiguration configuration, ILogger<TokenService> logger)
@@ -67,6 +68,16 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
 
         public string GenerateVerificationToken(string email)
         {
+            return GeneratePurposeToken(email, VerificationPurpose);
+        }
+
+        public string GeneratePasswordResetToken(string email)
+        {
+            return GeneratePurposeToken(email, PasswordResetPurpose);
+        }
+
+        private string GeneratePurposeToken(string email, string purpose)
+        {
             var key = _configuration["Jwt:Key"];
             var issuer = _configuration["Jwt:Issuer"];
             var audience = _configuration["Jwt:Audience"];
@@ -77,7 +88,7 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
             var claims = new List<Claim>
             {
                 new(ClaimConstants.Email, email),
-                new(ClaimConstants.Purpose, VerificationPurpose)
+                new(ClaimConstants.Purpose, purpose)
             };
 
             var token = new JwtSecurityToken(
@@ -91,6 +102,16 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
         }
 
         public bool TryValidateVerificationToken(string token, out string? email)
+        {
+            return TryValidatePurposeToken(token, VerificationPurpose, out email);
+        }
+
+        public bool TryValidatePasswordResetToken(string token, out string? email)
+        {
+            return TryValidatePurposeToken(token, PasswordResetPurpose, out email);
+        }
+
+        private bool TryValidatePurposeToken(string token, string expectedPurpose, out string? email)
         {
             email = null;
 
@@ -149,11 +170,11 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
 
                 var purpose = principal.FindFirst(ClaimConstants.Purpose)?.Value;
 
-                if (purpose != VerificationPurpose)
+                if (purpose != expectedPurpose)
                 {
                     _logger.LogWarning(
                         "Verification token validation failed. Invalid purpose. Expected: {ExpectedPurpose}, Actual: {ActualPurpose}",
-                        VerificationPurpose,
+                        expectedPurpose,
                         purpose);
 
                     return false;

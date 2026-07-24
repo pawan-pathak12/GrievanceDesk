@@ -12,6 +12,12 @@ namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
 
         Task<Result> CreatePasswordAsync(CreatePasswordDto dto);
 
+        Task<Result> RequestPasswordResetAsync(CheckEmailDto dto);
+
+        Task<Result> VerifyPasswordResetOtpAsync(VerifyOtpDto dto);
+
+        Task<Result> ResetPasswordAsync(ResetPasswordDto dto);
+
         Task<AuthResult> LoginAsync(LoginDto dto);
 
         Task<Result> ChangePasswordAsync(ChangePasswordDto dto);

@@ -9,5 +9,9 @@ namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
         string GenerateVerificationToken(string email);
 
         bool TryValidateVerificationToken(string token, out string? email);
+
+        string GeneratePasswordResetToken(string email);
+
+        bool TryValidatePasswordResetToken(string token, out string? email);
     }
 }

@@ -58,6 +58,46 @@ namespace SmartCollegeComplaintPortal.API.Controllers
 
         #endregion
 
+        #region Forgot Password Flow
+
+        [EnableRateLimiting("check-email")]
+        [HttpPost("forgot-password/check-email")]
+        public async Task<IActionResult> RequestPasswordReset([FromBody] CheckEmailDto dto)
+        {
+            var result = await _authService.RequestPasswordResetAsync(dto);
+
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
+
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
+        }
+
+        [EnableRateLimiting("verify-otp")]
+        [HttpPost("forgot-password/verify-otp")]
+        public async Task<IActionResult> VerifyPasswordResetOtp([FromBody] VerifyOtpDto dto)
+        {
+            var result = await _authService.VerifyPasswordResetOtpAsync(dto);
+
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
+
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
+        }
+
+        [EnableRateLimiting("create-password")]
+        [HttpPost("forgot-password/reset")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = await _authService.ResetPasswordAsync(dto);
+
+            if (!result.IsSuccess)
+                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
+
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
+        }
+
+        #endregion
+
         #region Login
         [EnableRateLimiting("login")]
         [HttpPost("login")]

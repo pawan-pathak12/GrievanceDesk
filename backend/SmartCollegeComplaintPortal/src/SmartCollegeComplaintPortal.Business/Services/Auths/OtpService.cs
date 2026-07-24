@@ -30,37 +30,55 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
 
         public async Task<Result> GenerateAsync(GenerateOtpDto dto)
         {
+            return await GenerateAsync(dto, requireExistingUser: false);
+        }
+
+        public async Task<Result> GenerateForPasswordResetAsync(GenerateOtpDto dto)
+        {
+            return await GenerateAsync(dto, requireExistingUser: true);
+        }
+
+        private async Task<Result> GenerateAsync(GenerateOtpDto dto, bool requireExistingUser)
+        {
             if (string.IsNullOrWhiteSpace(dto.Email))
             {
                 return Result.Failure("Email is required.");
             }
 
-            var user = await _userRepository.GetByEmailAddressAsync(dto.Email);
-            if (user != null)
+            var email = dto.Email.Trim().ToLowerInvariant();
+            var user = await _userRepository.GetByEmailAddressAsync(email);
+
+            if (!requireExistingUser && user != null)
             {
-                _logger.LogWarning("OTP request blocked. User already exists: {Email}", dto.Email);
+                _logger.LogWarning("Registration OTP request blocked. User already exists: {Email}", email);
                 return Result.Failure("User already exists.");
             }
 
-            if (await IsCoolDownActiveAsync(dto.Email))
+            if (requireExistingUser && (user == null || !user.IsActive))
             {
-                _logger.LogWarning("OTP request blocked by cooldown. Email: {Email}", dto.Email);
+                _logger.LogWarning("Password reset OTP request blocked. User not found or inactive: {Email}", email);
+                return Result.NotFound("No active account was found for this email.");
+            }
+
+            if (await IsCoolDownActiveAsync(email))
+            {
+                _logger.LogWarning("OTP request blocked by cooldown. Email: {Email}", email);
                 return Result.Failure("Please wait 60 seconds before requesting a new OTP.");
             }
 
-            if (await IsRateLimitExceededAsync(dto.Email))
+            if (await IsRateLimitExceededAsync(email))
             {
-                _logger.LogWarning("OTP request blocked by rate limit. Email: {Email}", dto.Email);
+                _logger.LogWarning("OTP request blocked by rate limit. Email: {Email}", email);
                 return Result.Failure("Too many OTP requests. Please try again after 15 minutes.");
             }
 
-            await _otpRepository.InvalidatePreviousOtpsAsync(dto.Email);
+            await _otpRepository.InvalidatePreviousOtpsAsync(email);
 
-            var otpCode = await GenerateAndSaveOtpAsync(dto.Email);
+            var otpCode = await GenerateAndSaveOtpAsync(email);
 
-            await _emailService.SendOtpEmailAsync(dto.Email, otpCode);
+            await _emailService.SendOtpEmailAsync(email, otpCode);
 
-            _logger.LogInformation("OTP generated and sent. Email: {Email}", dto.Email);
+            _logger.LogInformation("{OtpFlow} OTP generated and sent. Email: {Email}", requireExistingUser ? "Password reset" : "Registration", email);
 
             return Result.Success();
         }

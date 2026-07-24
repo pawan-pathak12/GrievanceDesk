@@ -7,6 +7,8 @@ namespace SmartCollegeComplaintPortal.Business.Interfaces.Auths
     {
         Task<Result> GenerateAsync(GenerateOtpDto dto);
 
+        Task<Result> GenerateForPasswordResetAsync(GenerateOtpDto dto);
+
         Task<Result> VerifyAsync(VerifyOtpDto dto);
     }
 }

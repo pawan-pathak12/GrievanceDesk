@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
     if (!email) return;
 
     setLoading(true);
-    const res = await authApi.checkEmail(email);
+    const res = await authApi.requestPasswordReset(email);
     setLoading(false);
 
     if (res.isSuccess) {

@@ -37,12 +37,10 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
-    const res = await authApi.createPassword({
+    const res = await authApi.resetPassword({
       email,
       verificationToken,
-      firstName: '',
-      lastName: '',
-      password: form.password,
+      newPassword: form.password,
     });
     setLoading(false);
 
