@@ -34,7 +34,7 @@ public enum ComplaintStatus
     Pending = 0,
     InProgress = 1,
     Resolved = 2,
-    Closed = 3,
+    Completed = 3,
     Irrelevant = 4
 }
 ```
@@ -108,6 +108,23 @@ public class Complaint
     public DateTime? UpdatedAt { get; set; }
 }
 ```
+
+### Complain 
+```csharp
+---
+CREATE TABLE Complaints (
+    Id              INT IDENTITY(1,1) PRIMARY KEY,
+    UserId          INT NOT NULL,
+    Title           NVARCHAR(200) NOT NULL,
+    Description     NVARCHAR(MAX) NOT NULL,
+    Category        INT NOT NULL DEFAULT 0,
+    Status          INT NOT NULL DEFAULT 0,            -- Pending=0
+    IsDuplicate     BIT NOT NULL DEFAULT 0,
+    IsEdited        BIT NOT NULL DEFAULT 0,
+    EditedAt        datetime2 not null , 
+    CreatedAt       DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    ---
+    ```
 
 ### ComplaintUpdate
 ```csharp
