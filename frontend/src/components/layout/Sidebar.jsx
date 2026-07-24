@@ -1,17 +1,18 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   function handleLogout() {
-    const confirmed = window.confirm('Are you sure you want to sign out?');
-    if (!confirmed) return;
-
-    logout();
-    navigate(ROUTES.LOGIN);
+    toast.confirm('Are you sure you want to sign out?', () => {
+      logout();
+      navigate(ROUTES.LOGIN);
+    });
   }
 
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Signed in user';
