@@ -30,11 +30,6 @@
   background: var(--error);
 }
 
-.toast-confirm {
-  align-items: flex-start;
-  background: var(--bg-sidebar);
-}
-
 .toast-icon {
   font-weight: 700;
   font-size: 1rem;
@@ -42,33 +37,6 @@
 
 .toast-message {
   flex: 1;
-}
-
-.toast-actions {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 6px;
-  margin-left: 8px;
-}
-
-.toast-action {
-  min-height: 28px;
-  padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--radius-sm);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-
-.toast-action-cancel {
-  background: transparent;
-}
-
-.toast-action-confirm {
-  border-color: #fff;
-  background: #fff;
-  color: var(--text-dark);
 }
 
 @keyframes toastIn {

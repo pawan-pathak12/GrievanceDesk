@@ -1,24 +1,38 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
-  const toast = useToast();
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!isLogoutDialogOpen) return undefined;
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') setIsLogoutDialogOpen(false);
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLogoutDialogOpen]);
+
   function handleLogout() {
-    toast.confirm('Are you sure you want to sign out?', () => {
-      logout();
-      navigate(ROUTES.LOGIN);
-    });
+    setIsLogoutDialogOpen(true);
+  }
+
+  function confirmLogout() {
+    logout();
+    navigate(ROUTES.LOGIN);
   }
 
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Signed in user';
 
   return (
-    <aside className="sidebar">
+    <>
+      <aside className="sidebar">
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">GD</div>
         <div>
@@ -79,6 +93,30 @@ export default function Sidebar() {
           Sign Out
         </button>
       </div>
-    </aside>
+      </aside>
+
+      {isLogoutDialogOpen && (
+        <div
+          className="logout-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsLogoutDialogOpen(false);
+          }}
+        >
+          <section className="logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
+            <h2 id="logout-modal-title">Sign out?</h2>
+            <p>You will need to sign in again to access your workspace.</p>
+            <div className="logout-modal-actions">
+              <button type="button" className="logout-modal-cancel" onClick={() => setIsLogoutDialogOpen(false)} autoFocus>
+                Cancel
+              </button>
+              <button type="button" className="logout-modal-confirm" onClick={confirmLogout}>
+                Sign out
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
