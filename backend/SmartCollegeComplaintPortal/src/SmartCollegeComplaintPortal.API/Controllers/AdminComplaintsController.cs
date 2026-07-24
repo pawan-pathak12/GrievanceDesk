@@ -53,48 +53,15 @@ namespace SmartCollegeComplaintPortal.API.Controllers
             return Ok(new ApiResponse(true, result.StatusCode, result.Data));
         }
 
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateComplaint(int id, [FromBody] AdminComplaintUpdateRequest request)
         {
-            var result = await _complaintService.UpdateStatusAsync(id, request);
+            var result = await _complaintService.UpdateAdminComplaintAsync(id, request);
             if (!result.IsSuccess)
             {
                 return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
             }
-            return Ok(new ApiResponse(true, result.StatusCode, new { message = result.Message }));
-        }
-
-        [HttpPost("{id}/notes")]
-        public async Task<IActionResult> AddNote(int id, [FromBody] AddNoteRequest request)
-        {
-            var result = await _complaintService.AddNoteAsync(id, request);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
-            }
-            return Ok(new ApiResponse(true, result.StatusCode, new { message = result.Message }));
-        }
-
-        [HttpPut("{id}/duplicate")]
-        public async Task<IActionResult> MarkDuplicate(int id, [FromBody] MarkDuplicateRequest request)
-        {
-            var result = await _complaintService.MarkDuplicateAsync(id, request);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
-            }
-            return Ok(new ApiResponse(true, result.StatusCode, new { message = result.Message }));
-        }
-
-        [HttpPut("{id}/irrelevant")]
-        public async Task<IActionResult> MarkIrrelevant(int id, [FromBody] MarkIrrelevantRequest request)
-        {
-            var result = await _complaintService.MarkIrrelevantAsync(id, request);
-            if (!result.IsSuccess)
-            {
-                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
-            }
-            return Ok(new ApiResponse(true, result.StatusCode, new { message = result.Message }));
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
         }
     }
 }

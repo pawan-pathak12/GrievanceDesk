@@ -6,28 +6,64 @@ import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
-import { ComplaintStatus, StatusOptions, formatDateTime, formatStatus, normalizeStatus } from '../../utils/enums';
+import { ComplaintStatus, formatDateTime, formatStatus, normalizeStatus } from '../../utils/enums';
+
+const EMPTY_FORM = {
+  status: ComplaintStatus.Pending,
+  note: '',
+  isDuplicate: false,
+  isIrrelevant: false,
+  irrelevantReason: '',
+};
 
 function renderUpdate(update) {
+  if (update.updateType === 'Created') return 'Complaint created';
   if (update.updateType === 'StatusChanged') {
     return `${formatStatus(update.oldStatus)} to ${formatStatus(update.newStatus)}`;
   }
+  if (update.updateType === 'MarkedDuplicate') return 'Marked as duplicate';
+  if (update.updateType === 'MarkedIrrelevant') return update.noteText || 'Marked as irrelevant';
   if (update.noteText) return update.noteText;
   return 'Complaint activity recorded';
+}
+
+function getAllowedStatuses(status) {
+  if (status === ComplaintStatus.Pending) {
+    return [ComplaintStatus.Pending, ComplaintStatus.InProgress];
+  }
+
+  if (status === ComplaintStatus.InProgress) {
+    return [ComplaintStatus.InProgress, ComplaintStatus.Resolved];
+  }
+
+  return [status];
 }
 
 export default function AdminComplaintDetailPage() {
   const { id } = useParams();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [noteText, setNoteText] = useState('');
-  const [irrelevantReason, setIrrelevantReason] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState('');
+  const [updating, setUpdating] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
     loadComplaint();
   }, [id]);
+
+  useEffect(() => {
+    if (!complaint) return;
+
+    const status = normalizeStatus(complaint.status);
+    setForm({
+      ...EMPTY_FORM,
+      status,
+      isDuplicate: Boolean(complaint.isDuplicate),
+      isIrrelevant: status === ComplaintStatus.Irrelevant,
+    });
+    setFormError('');
+  }, [complaint]);
 
   async function loadComplaint() {
     setLoading(true);
@@ -37,47 +73,88 @@ export default function AdminComplaintDetailPage() {
     setLoading(false);
   }
 
-  async function runAction(action, successMessage) {
-    setActionLoading(true);
-    const res = await action();
-    setActionLoading(false);
-    if (res.isSuccess) {
-      toast.success(successMessage);
-      loadComplaint();
-      return true;
+  function updateForm(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+    if (formError) setFormError('');
+  }
+
+  function toggleDuplicate(checked) {
+    setForm((current) => ({
+      ...current,
+      isDuplicate: checked,
+      isIrrelevant: checked ? false : current.isIrrelevant,
+      irrelevantReason: checked ? '' : current.irrelevantReason,
+    }));
+    if (formError) setFormError('');
+  }
+
+  function toggleIrrelevant(checked) {
+    setForm((current) => ({
+      ...current,
+      isIrrelevant: checked,
+      isDuplicate: checked ? false : current.isDuplicate,
+    }));
+    if (formError) setFormError('');
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const selectedStatus = Number(form.status);
+    const note = form.note.trim();
+    const irrelevantReason = form.irrelevantReason.trim();
+
+    if (form.isDuplicate && form.isIrrelevant) {
+      setFormError('A complaint cannot be marked as both duplicate and irrelevant.');
+      return;
     }
-    toast.error(res.errors?.[0] || 'Action failed');
-    return false;
-  }
 
-  async function handleStatusChange(newStatus) {
-    await runAction(() => adminApi.updateStatus(id, newStatus), 'Status updated successfully');
-  }
+    if (selectedStatus === ComplaintStatus.Resolved && !note) {
+      setFormError('A resolution note is required before resolving a complaint.');
+      return;
+    }
 
-  async function handleAddNote(e) {
-    e.preventDefault();
-    if (!noteText.trim()) return;
-    const ok = await runAction(() => adminApi.addNote(id, noteText.trim()), 'Note added successfully');
-    if (ok) setNoteText('');
-  }
+    if (form.isIrrelevant && !irrelevantReason) {
+      setFormError('An irrelevant reason is required when marking a complaint irrelevant.');
+      return;
+    }
 
-  async function handleMarkDuplicate() {
-    await runAction(() => adminApi.markDuplicate(id, true), 'Marked as duplicate');
-  }
+    if (
+      selectedStatus === normalizeStatus(complaint.status) &&
+      !note &&
+      !form.isDuplicate &&
+      !form.isIrrelevant
+    ) {
+      setFormError('Select a new status, add a note, or mark the complaint before updating.');
+      return;
+    }
 
-  async function handleMarkIrrelevant(e) {
-    e.preventDefault();
-    const ok = await runAction(
-      () => adminApi.markIrrelevant(id, irrelevantReason.trim() || 'Marked irrelevant by administrator'),
-      'Marked as irrelevant'
-    );
-    if (ok) setIrrelevantReason('');
+    setUpdating(true);
+    setFormError('');
+    const res = await adminApi.updateComplaint(id, {
+      status: selectedStatus,
+      note: note || null,
+      isDuplicate: form.isDuplicate,
+      isIrrelevant: form.isIrrelevant,
+      irrelevantReason: irrelevantReason || null,
+    });
+    setUpdating(false);
+
+    if (res.isSuccess) {
+      setComplaint(res.data);
+      toast.success('Complaint updated successfully.');
+    } else {
+      const error = res.errors?.[0] || 'Unable to update complaint.';
+      setFormError(error);
+      toast.error(error);
+    }
   }
 
   if (loading) return <LoadingSpinner />;
   if (!complaint) return <div className="empty-state"><strong>Complaint not found</strong></div>;
 
   const currentStatus = normalizeStatus(complaint.status);
+  const isLocked = complaint.isDuplicate || currentStatus === ComplaintStatus.Resolved || currentStatus === ComplaintStatus.Irrelevant;
+  const allowedStatuses = getAllowedStatuses(currentStatus);
 
   return (
     <div>
@@ -101,50 +178,105 @@ export default function AdminComplaintDetailPage() {
           </div>
         </div>
 
-        <div className="detail-section">
-          <div className="detail-label">Description</div>
-          <p>{complaint.description}</p>
-        </div>
-
-        <div className="admin-actions">
-          <div className="action-group">
-            <label>Change Status</label>
-            <div className="action-buttons">
-              {StatusOptions.filter((opt) => opt.value !== currentStatus && opt.value !== ComplaintStatus.Irrelevant).map((opt) => (
-                <button key={opt.value} className="btn-action" onClick={() => handleStatusChange(opt.value)} disabled={actionLoading}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+        <div className="complaint-detail-grid">
+          <div className="detail-section complaint-description">
+            <div className="detail-label">Description</div>
+            <p>{complaint.description}</p>
           </div>
-          <button className="btn-action" onClick={handleMarkDuplicate} disabled={actionLoading || complaint.isDuplicate}>
-            Mark Duplicate
-          </button>
+          <div className="detail-section">
+            <div className="detail-label">Category</div>
+            <p>{complaint.category}</p>
+          </div>
+          <div className="detail-section">
+            <div className="detail-label">Current Status</div>
+            <p>{formatStatus(complaint.status)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="detail-card complaint-update-card">
+        <div className="complaint-update-heading">
+          <div>
+            <h2>Update Complaint</h2>
+            <p>Review and submit all changes together.</p>
+          </div>
         </div>
 
-        <form className="note-form" onSubmit={handleAddNote}>
-          <input
-            type="text"
-            placeholder="Add an internal resolution note"
-            value={noteText}
-            onChange={(e) => setNoteText(e.target.value)}
-            minLength={3}
-            maxLength={2000}
-          />
-          <button type="submit" disabled={actionLoading || !noteText.trim()}>Add Note</button>
-        </form>
+        {isLocked && (
+          <div className="complaint-finalized-message" role="status">
+            This complaint has been finalized and can no longer be modified.
+          </div>
+        )}
 
-        <form className="note-form danger-form" onSubmit={handleMarkIrrelevant}>
-          <input
-            type="text"
-            placeholder="Reason for marking irrelevant"
-            value={irrelevantReason}
-            onChange={(e) => setIrrelevantReason(e.target.value)}
-            maxLength={2000}
-          />
-          <button type="submit" disabled={actionLoading || currentStatus === ComplaintStatus.Irrelevant}>
-            Mark Irrelevant
-          </button>
+        <form className="complaint-update-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="complaint-status">Status</label>
+            <select
+              id="complaint-status"
+              value={form.status}
+              disabled={isLocked || updating}
+              onChange={(event) => updateForm('status', Number(event.target.value))}
+            >
+              {allowedStatuses.map((status) => (
+                <option key={status} value={status}>{formatStatus(status)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="resolution-note">Resolution Note</label>
+            <textarea
+              id="resolution-note"
+              value={form.note}
+              disabled={isLocked || updating}
+              maxLength={2000}
+              placeholder="Add an internal resolution note"
+              onChange={(event) => updateForm('note', event.target.value)}
+            />
+          </div>
+
+          <div className="complaint-update-options">
+            <label className="update-checkbox">
+              <input
+                type="checkbox"
+                checked={form.isDuplicate}
+                disabled={isLocked || updating}
+                onChange={(event) => toggleDuplicate(event.target.checked)}
+              />
+              <span>Mark as Duplicate</span>
+            </label>
+            <label className="update-checkbox">
+              <input
+                type="checkbox"
+                checked={form.isIrrelevant}
+                disabled={isLocked || updating}
+                onChange={(event) => toggleIrrelevant(event.target.checked)}
+              />
+              <span>Mark as Irrelevant</span>
+            </label>
+          </div>
+
+          {form.isIrrelevant && (
+            <div className="form-group">
+              <label htmlFor="irrelevant-reason">Irrelevant Reason</label>
+              <textarea
+                id="irrelevant-reason"
+                value={form.irrelevantReason}
+                disabled={isLocked || updating}
+                maxLength={2000}
+                placeholder="Explain why this complaint is irrelevant"
+                onChange={(event) => updateForm('irrelevantReason', event.target.value)}
+              />
+            </div>
+          )}
+
+          {formError && <p className="complaint-update-error" role="alert">{formError}</p>}
+
+          <div className="complaint-update-footer">
+            <button type="submit" className="btn-submit" disabled={isLocked || updating}>
+              {updating ? 'Updating...' : 'Update Complaint'}
+            </button>
+          </div>
         </form>
       </div>
 
@@ -154,13 +286,13 @@ export default function AdminComplaintDetailPage() {
           <p className="muted-text">No activity has been recorded yet.</p>
         ) : (
           <div className="timeline">
-            {complaint.updates.map((u, i) => (
-              <div className="timeline-item" key={u.id || i}>
+            {complaint.updates.map((update, index) => (
+              <div className="timeline-item" key={update.id || index}>
                 <div className="timeline-item-header">
-                  <span className="timeline-item-type">{u.updateType || 'Update'}</span>
-                  <span className="timeline-item-date">{formatDateTime(u.createdAt)}</span>
+                  <span className="timeline-item-type">{update.updateType || 'Update'}</span>
+                  <span className="timeline-item-date">{formatDateTime(update.createdAt)}</span>
                 </div>
-                <div className="timeline-item-body">{renderUpdate(u)}</div>
+                <div className="timeline-item-body">{renderUpdate(update)}</div>
               </div>
             ))}
           </div>

@@ -488,6 +488,125 @@
   line-height: 1.75;
 }
 
+.complaint-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.3fr) minmax(150px, 0.3fr);
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.complaint-update-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.complaint-update-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.complaint-update-heading h2 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 1.08rem;
+}
+
+.complaint-update-heading p {
+  margin: 4px 0 0;
+  color: var(--text-gray);
+  font-size: 0.82rem;
+}
+
+.complaint-finalized-message {
+  margin: 20px 24px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-sm);
+  background: var(--warning-bg);
+  color: #92400e;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.complaint-update-form {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+}
+
+.complaint-update-form select,
+.complaint-update-form textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #f8fafc;
+  color: var(--text-dark);
+  padding: 11px 12px;
+}
+
+.complaint-update-form textarea {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.complaint-update-form select:focus,
+.complaint-update-form textarea:focus {
+  outline: 3px solid var(--primary-soft);
+  border-color: var(--primary);
+  background: #ffffff;
+}
+
+.complaint-update-form select:disabled,
+.complaint-update-form textarea:disabled {
+  cursor: not-allowed;
+  background: #f1f5f9;
+  color: var(--text-gray);
+}
+
+.complaint-update-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.update-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.update-checkbox input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.update-checkbox input:disabled {
+  cursor: not-allowed;
+}
+
+.complaint-update-error {
+  margin: -4px 0 0;
+  color: var(--error);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.complaint-update-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
 .timeline {
   position: relative;
   display: grid;
@@ -799,6 +918,7 @@
   .stats-grid,
   .page-header-row,
   .detail-heading,
+  .complaint-detail-grid,
   .form-row,
   .note-form {
     grid-template-columns: 1fr;
@@ -807,6 +927,15 @@
 
   .detail-meta {
     min-width: 0;
+  }
+
+  .complaint-update-heading,
+  .complaint-update-footer {
+    display: grid;
+  }
+
+  .complaint-update-footer .btn-submit {
+    width: 100%;
   }
 
   .form-footer {

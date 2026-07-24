@@ -321,6 +321,88 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
             return false;
         }
 
+        public async Task<bool> ApplyAdminUpdateAsync(
+            int complaintId,
+            int status,
+            bool isDuplicate,
+            DateTime updatedAt,
+            IReadOnlyCollection<ComplaintUpdate> updates)
+        {
+            const string updateComplaintSql = @"
+                UPDATE Complaints
+                SET
+                    Status = @Status,
+                    IsDuplicate = @IsDuplicate,
+                    UpdatedAt = @UpdatedAt
+                WHERE Id = @Id
+                  AND IsActive = 1;";
+
+            const string createUpdateSql = @"
+                INSERT INTO ComplaintUpdates
+                (
+                    ComplaintId,
+                    UpdatedByUserId,
+                    UpdateType,
+                    OldStatus,
+                    NewStatus,
+                    NoteText,
+                    CreatedAt
+                )
+                VALUES
+                (
+                    @ComplaintId,
+                    @UpdatedByUserId,
+                    @UpdateType,
+                    @OldStatus,
+                    @NewStatus,
+                    @NoteText,
+                    @CreatedAt
+                );";
+
+            using var connection = _dbContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                var rowsAffected = await connection.ExecuteAsync(
+                    updateComplaintSql,
+                    new
+                    {
+                        Id = complaintId,
+                        Status = status,
+                        IsDuplicate = isDuplicate,
+                        UpdatedAt = updatedAt
+                    },
+                    transaction);
+
+                if (rowsAffected == 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                foreach (var update in updates)
+                {
+                    await connection.ExecuteAsync(createUpdateSql, update, transaction);
+                }
+
+                transaction.Commit();
+
+                _logger.LogInformation(
+                    "Applied admin update to complaint {ComplaintId} with {UpdateCount} timeline entries",
+                    complaintId,
+                    updates.Count);
+
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
         public async Task<bool> MarkAsEditedAsync(int complaintId, DateTime updatedAt)
         {
             const string sql = @"

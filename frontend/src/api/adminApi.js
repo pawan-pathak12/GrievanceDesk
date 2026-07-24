@@ -1,4 +1,4 @@
-import { get, post, put } from './client';
+import { get, put } from './client';
 
 export const adminApi = {
   getAll: (params = {}) => {
@@ -14,11 +14,5 @@ export const adminApi = {
 
   getById: (id) => get(`/api/admin/complaints/${id}`),
 
-  updateStatus: (id, newStatus) => put(`/api/admin/complaints/${id}/status`, { newStatus }),
-
-  addNote: (id, noteText) => post(`/api/admin/complaints/${id}/notes`, { noteText }),
-
-  markDuplicate: (id, isDuplicate) => put(`/api/admin/complaints/${id}/duplicate`, { isDuplicate }),
-
-  markIrrelevant: (id, reason) => put(`/api/admin/complaints/${id}/irrelevant`, { reason }),
+  updateComplaint: (id, data) => put(`/api/admin/complaints/${id}`, data),
 };

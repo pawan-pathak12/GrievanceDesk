@@ -16,10 +16,7 @@ namespace SmartCollegeComplaintPortal.Business.Interfaces.Complaints
         // ──── Admin Operations ────
         Task<Result> GetAllAsync(int? status, int? category, string? search);
         Task<Result> GetComplaintByIdAsync(int complaintId);
-        Task<Result> UpdateStatusAsync(int complaintId, UpdateStatusRequest request);
-        Task<Result> AddNoteAsync(int complaintId, AddNoteRequest request);
-        Task<Result> MarkDuplicateAsync(int complaintId, MarkDuplicateRequest request);
-        Task<Result> MarkIrrelevantAsync(int complaintId, MarkIrrelevantRequest request);
+        Task<Result> UpdateAdminComplaintAsync(int complaintId, AdminComplaintUpdateRequest request);
         Task<Result> GetAllIrrelevantAsync();
 
         // ──── Dashboard ────

@@ -307,7 +307,7 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
             return Result.Success(response);
         }
 
-        public async Task<Result> UpdateStatusAsync(int complaintId, UpdateStatusRequest request)
+        public async Task<Result> UpdateAdminComplaintAsync(int complaintId, AdminComplaintUpdateRequest request)
         {
             var userId = _currentUserService.GetUserId();
             if (userId == null)
@@ -315,145 +315,138 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
                 return Result.Unauthorized("User could not be identified.");
             }
 
-            var currentStatus = await _complaintRepository.GetStatusAsync(complaintId);
-            if (currentStatus == null)
+            var complaint = await _complaintRepository.GetByIdAsync(complaintId);
+            if (complaint == null)
             {
                 return Result.NotFound($"Complaint with ID {complaintId} not found.");
             }
 
+            var currentStatus = (ComplaintStatus)complaint.Status;
+            if (IsLockedComplaint(currentStatus, complaint.IsDuplicate))
+            {
+                return Result.Failure("This complaint has been finalized and can no longer be modified.");
+            }
+
+            if (request.IsDuplicate && request.IsIrrelevant)
+            {
+                return Result.Failure("A complaint cannot be marked as both duplicate and irrelevant.");
+            }
+
+            var targetStatus = request.IsIrrelevant ? ComplaintStatus.Irrelevant : request.Status;
+            if (!request.IsIrrelevant && targetStatus == ComplaintStatus.Irrelevant)
+            {
+                return Result.Failure("Use the irrelevant option and provide a reason to mark a complaint irrelevant.");
+            }
+
+            if (!request.IsIrrelevant && !IsAllowedStatusTransition(currentStatus, targetStatus))
+            {
+                return Result.Failure($"A complaint in {currentStatus} status cannot be changed to {targetStatus}.");
+            }
+
+            var note = request.Note?.Trim();
+            var irrelevantReason = request.IrrelevantReason?.Trim();
+
+            if (targetStatus == ComplaintStatus.Resolved && string.IsNullOrWhiteSpace(note))
+            {
+                return Result.Failure("A resolution note is required before resolving a complaint.");
+            }
+
+            if (request.IsIrrelevant && string.IsNullOrWhiteSpace(irrelevantReason))
+            {
+                return Result.Failure("An irrelevant reason is required when marking a complaint irrelevant.");
+            }
+
+            var updates = new List<ComplaintUpdate>();
             var now = DateTime.UtcNow;
 
-            var updated = await _complaintRepository.UpdateStatusAsync(
-                complaintId, (int)request.NewStatus, now);
+            if (targetStatus != currentStatus && !request.IsIrrelevant)
+            {
+                updates.Add(new ComplaintUpdate
+                {
+                    ComplaintId = complaintId,
+                    UpdatedByUserId = userId.Value,
+                    UpdateType = ComplaintUpdateType.StatusChanged,
+                    OldStatus = currentStatus,
+                    NewStatus = targetStatus,
+                    CreatedAt = now
+                });
+            }
 
+            if (!string.IsNullOrWhiteSpace(note))
+            {
+                updates.Add(new ComplaintUpdate
+                {
+                    ComplaintId = complaintId,
+                    UpdatedByUserId = userId.Value,
+                    UpdateType = ComplaintUpdateType.NoteAdded,
+                    NoteText = note,
+                    CreatedAt = now
+                });
+            }
+
+            if (request.IsDuplicate)
+            {
+                updates.Add(new ComplaintUpdate
+                {
+                    ComplaintId = complaintId,
+                    UpdatedByUserId = userId.Value,
+                    UpdateType = ComplaintUpdateType.MarkedDuplicate,
+                    CreatedAt = now
+                });
+            }
+
+            if (request.IsIrrelevant)
+            {
+                updates.Add(new ComplaintUpdate
+                {
+                    ComplaintId = complaintId,
+                    UpdatedByUserId = userId.Value,
+                    UpdateType = ComplaintUpdateType.MarkedIrrelevant,
+                    OldStatus = currentStatus,
+                    NewStatus = ComplaintStatus.Irrelevant,
+                    NoteText = irrelevantReason,
+                    CreatedAt = now
+                });
+            }
+
+            if (updates.Count == 0)
+            {
+                return Result.Failure("Select a new status, add a note, or mark the complaint before updating.");
+            }
+
+            complaint.Status = (int)targetStatus;
+            complaint.IsDuplicate = request.IsDuplicate;
+            complaint.UpdatedAt = now;
+
+            var updated = await _complaintRepository.ApplyAdminUpdateAsync(
+                complaintId,
+                complaint.Status,
+                complaint.IsDuplicate,
+                now,
+                updates);
             if (!updated)
             {
-                return Result.Failure("Status update failed.");
+                return Result.Failure("Complaint update failed. Please try again.");
             }
 
-            // Create audit trail entry
-            var updateEntry = new ComplaintUpdate
-            {
-                ComplaintId = complaintId,
-                UpdatedByUserId = userId.Value,
-                UpdateType = ComplaintUpdateType.StatusChanged,
-                OldStatus = (ComplaintStatus)currentStatus.Value,
-                NewStatus = request.NewStatus,
-                CreatedAt = now
-            };
+            _logger.LogInformation("Admin updated complaint {ComplaintId} with {UpdateCount} actions", complaintId, updates.Count);
 
-            await _complaintRepository.CreateUpdateAsync(updateEntry);
-
-            _logger.LogInformation(
-                "Complaint status updated. ComplaintId: {ComplaintId}, OldStatus: {OldStatus}, NewStatus: {NewStatus}",
-                complaintId, currentStatus.Value, request.NewStatus);
-
-            return Result.Success("Status updated successfully.");
+            return await GetComplaintByIdAsync(complaintId);
         }
 
-        public async Task<Result> AddNoteAsync(int complaintId, AddNoteRequest request)
+        private static bool IsLockedComplaint(ComplaintStatus status, bool isDuplicate)
         {
-            var userId = _currentUserService.GetUserId();
-            if (userId == null)
-            {
-                return Result.Unauthorized("User could not be identified.");
-            }
-
-            var exists = await _complaintRepository.ExistsAsync(complaintId);
-            if (!exists)
-            {
-                return Result.NotFound($"Complaint with ID {complaintId} not found.");
-            }
-
-            var updateEntry = new ComplaintUpdate
-            {
-                ComplaintId = complaintId,
-                UpdatedByUserId = userId.Value,
-                UpdateType = ComplaintUpdateType.NoteAdded,
-                NoteText = request.NoteText.Trim(),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _complaintRepository.CreateUpdateAsync(updateEntry);
-
-            _logger.LogInformation(
-                "Note added to complaint. ComplaintId: {ComplaintId}",
-                complaintId);
-
-            return Result.Success("Note added successfully.");
+            return status is ComplaintStatus.Resolved or ComplaintStatus.Irrelevant || isDuplicate;
         }
 
-        public async Task<Result> MarkDuplicateAsync(int complaintId, MarkDuplicateRequest request)
+        private static bool IsAllowedStatusTransition(ComplaintStatus currentStatus, ComplaintStatus targetStatus)
         {
-            var userId = _currentUserService.GetUserId();
-            if (userId == null)
+            return currentStatus switch
             {
-                return Result.Unauthorized("User could not be identified.");
-            }
-
-            var exists = await _complaintRepository.ExistsAsync(complaintId);
-            if (!exists)
-            {
-                return Result.NotFound($"Complaint with ID {complaintId} not found.");
-            }
-
-            var now = DateTime.UtcNow;
-
-            await _complaintRepository.UpdateDuplicateFlagAsync(complaintId, request.IsDuplicate, now);
-
-            var updateEntry = new ComplaintUpdate
-            {
-                ComplaintId = complaintId,
-                UpdatedByUserId = userId.Value,
-                UpdateType = ComplaintUpdateType.MarkedDuplicate,
-                NoteText = request.NoteText,
-                CreatedAt = now
+                ComplaintStatus.Pending => targetStatus is ComplaintStatus.Pending or ComplaintStatus.InProgress,
+                ComplaintStatus.InProgress => targetStatus is ComplaintStatus.InProgress or ComplaintStatus.Resolved,
+                _ => false
             };
-
-            await _complaintRepository.CreateUpdateAsync(updateEntry);
-
-            _logger.LogInformation(
-                "Complaint marked as duplicate. ComplaintId: {ComplaintId}, IsDuplicate: {IsDuplicate}",
-                complaintId, request.IsDuplicate);
-
-            return Result.Success("Complaint duplicate flag updated.");
-        }
-
-        public async Task<Result> MarkIrrelevantAsync(int complaintId, MarkIrrelevantRequest request)
-        {
-            var userId = _currentUserService.GetUserId();
-            if (userId == null)
-            {
-                return Result.Unauthorized("User could not be identified.");
-            }
-
-            var exists = await _complaintRepository.ExistsAsync(complaintId);
-            if (!exists)
-            {
-                return Result.NotFound($"Complaint with ID {complaintId} not found.");
-            }
-
-            var now = DateTime.UtcNow;
-
-            await _complaintRepository.UpdateStatusAsync(complaintId, (int)ComplaintStatus.Irrelevant, now);
-
-            var updateEntry = new ComplaintUpdate
-            {
-                ComplaintId = complaintId,
-                UpdatedByUserId = userId.Value,
-                UpdateType = ComplaintUpdateType.MarkedIrrelevant,
-                NoteText = request.Reason,
-                NewStatus = ComplaintStatus.Irrelevant,
-                CreatedAt = now
-            };
-
-            await _complaintRepository.CreateUpdateAsync(updateEntry);
-
-            _logger.LogInformation(
-                "Complaint marked as irrelevant. ComplaintId: {ComplaintId}",
-                complaintId);
-
-            return Result.Success("Complaint marked as irrelevant.");
         }
 
         public async Task<Result> GetAllIrrelevantAsync()
