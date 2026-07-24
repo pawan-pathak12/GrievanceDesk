@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import StatCard from '../../components/common/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
+import ComplaintStatusPieChart from '../../components/common/ComplaintStatusPieChart';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
@@ -54,6 +55,8 @@ export default function AdminDashboardPage() {
         <StatCard label="Resolved" value={stats?.resolved || 0} icon="R" color="success" />
         <StatCard label="Pending" value={stats?.pending || 0} icon="P" color="warning" />
       </div>
+
+      <ComplaintStatusPieChart complaints={complaints} />
 
       <div className="data-table-wrapper">
         <div className="table-header">
