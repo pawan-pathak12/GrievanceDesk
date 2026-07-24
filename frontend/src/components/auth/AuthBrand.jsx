@@ -6,7 +6,7 @@ export default function AuthBrand() {
       <div className="auth-brand-content">
         <div className="auth-brand-icon">GD</div>
         <h1>GrievanceDesk</h1>
-        <p>A secure complaint management workspace for transparent campus operations.</p>
+        <p>A secure complaint management workspace for organizations that value transparent resolution.</p>
 
         <div className="auth-brand-features">
           <div className="auth-brand-feature">

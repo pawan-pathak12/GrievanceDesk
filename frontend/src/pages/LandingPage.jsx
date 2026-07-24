@@ -37,7 +37,7 @@ export default function LandingPage() {
         </nav>
 
         <div className="landing-hero-content">
-          <p className="landing-eyebrow">Campus operations, made accountable</p>
+          <p className="landing-eyebrow">Organization operations, made accountable</p>
           <h1>Make every concern easier to hear and resolve.</h1>
           <p className="landing-hero-copy">
             GrievanceDesk gives members a simple way to report issues and gives administrators
@@ -50,7 +50,7 @@ export default function LandingPage() {
         </div>
 
         <div className="landing-hero-footer">
-          <span>Built for transparent campus operations</span>
+          <span>Built for transparent organization operations</span>
           <span>Secure member access</span>
           <span>Trackable resolutions</span>
         </div>
@@ -87,7 +87,7 @@ export default function LandingPage() {
 
       <footer className="landing-footer">
         <span>GrievanceDesk</span>
-        <span>Complaint management for better campus communities.</span>
+        <span>Complaint management for organizations that listen and act.</span>
       </footer>
     </main>
   );

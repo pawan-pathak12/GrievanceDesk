@@ -7,6 +7,9 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   function handleLogout() {
+    const confirmed = window.confirm('Are you sure you want to sign out?');
+    if (!confirmed) return;
+
     logout();
     navigate(ROUTES.LOGIN);
   }
@@ -19,7 +22,7 @@ export default function Sidebar() {
         <div className="sidebar-logo-icon">GD</div>
         <div>
           <h2>GrievanceDesk</h2>
-          <span>{isAdmin ? 'Admin Portal' : 'Student Portal'}</span>
+          <span>{isAdmin ? 'Admin Portal' : 'Member Portal'}</span>
         </div>
       </div>
 
@@ -67,7 +70,7 @@ export default function Sidebar() {
           <div className="sidebar-avatar">{(user?.firstName?.[0] || 'U').toUpperCase()}</div>
           <div className="sidebar-user-info">
             <span className="sidebar-user-name">{displayName}</span>
-            <span className="sidebar-user-role">{isAdmin ? 'Administrator' : 'Student member'}</span>
+            <span className="sidebar-user-role">{isAdmin ? 'Administrator' : 'Organization member'}</span>
           </div>
         </div>
         <button className="sidebar-link logout-btn" onClick={handleLogout}>
