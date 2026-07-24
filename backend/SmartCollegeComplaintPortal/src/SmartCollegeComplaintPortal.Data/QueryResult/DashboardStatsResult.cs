@@ -6,7 +6,6 @@ namespace SmartCollegeComplaintPortal.Data.QueryResult
         public int Pending { get; set; }
         public int InProgress { get; set; }
         public int Resolved { get; set; }
-        public int Closed { get; set; }
         public int Irrelevant { get; set; }
     }
 

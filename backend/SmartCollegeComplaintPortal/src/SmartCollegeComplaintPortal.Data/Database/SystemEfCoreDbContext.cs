@@ -53,10 +53,10 @@ namespace SmartCollegeComplaintPortal.Data.Database
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Description).IsRequired();
                 entity.Property(e => e.Category).HasDefaultValue(ComplaintCategory.General);
-                entity.Property(e => e.Location).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Status).HasDefaultValue(ComplaintStatus.Pending);
                 entity.Property(e => e.IsDuplicate).HasDefaultValue(false);
                 entity.Property(e => e.IsEdited).HasDefaultValue(false);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 
                 entity.HasIndex(e => e.UserId);

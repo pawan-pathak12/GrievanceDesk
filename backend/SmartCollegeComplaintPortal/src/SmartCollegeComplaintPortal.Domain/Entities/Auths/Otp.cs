@@ -9,7 +9,7 @@
         public DateTime ExpiresAt { get; set; }
         public bool IsUsed { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int AttemptCount { get; set; }
+
     }
 
 }

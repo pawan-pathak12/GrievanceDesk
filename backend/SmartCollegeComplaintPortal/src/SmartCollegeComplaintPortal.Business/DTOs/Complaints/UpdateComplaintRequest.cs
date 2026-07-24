@@ -13,8 +13,5 @@ namespace SmartCollegeComplaintPortal.Business.DTOs.Complaints
 
         [Required]
         public ComplaintCategory Category { get; set; }
-
-        [Required, StringLength(200)]
-        public string Location { get; set; } = string.Empty;
     }
 }

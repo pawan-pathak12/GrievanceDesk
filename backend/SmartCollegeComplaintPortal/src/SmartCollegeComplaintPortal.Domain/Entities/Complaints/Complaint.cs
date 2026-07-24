@@ -9,10 +9,10 @@ namespace SmartCollegeComplaintPortal.Domain.Entities.Complaints
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public ComplaintCategory Category { get; set; } = ComplaintCategory.General;
-        public string Location { get; set; } = string.Empty;
         public ComplaintStatus Status { get; set; } = ComplaintStatus.Pending;
         public bool IsDuplicate { get; set; } = false;
         public bool IsEdited { get; set; } = false;
+        public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

@@ -10,8 +10,5 @@ namespace SmartCollegeComplaintPortal.Data.QueryResult
         public int? NewStatus { get; set; }
         public string? NoteText { get; set; }
         public DateTime CreatedAt { get; set; }
-
-        // From JOIN with Users
-        public string UpdatedByUsername { get; set; } = string.Empty;
     }
 }

@@ -22,7 +22,7 @@ namespace SmartCollegeComplaintPortal.Data.Interfaces
 
         // UPDATE
         Task<bool> UpdateAsync(int complaintId, string title, string description,
-                               int category, string location, DateTime updatedAt);
+                               int category, DateTime updatedAt);
         Task<bool> UpdateStatusAsync(int complaintId, int newStatus, DateTime updatedAt);
         Task<bool> UpdateDuplicateFlagAsync(int complaintId, bool isDuplicate, DateTime updatedAt);
         Task<bool> MarkAsEditedAsync(int complaintId, DateTime updatedAt);

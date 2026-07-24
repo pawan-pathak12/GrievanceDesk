@@ -29,10 +29,10 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     Title,
                     Description,
                     Category,
-                    Location,
                     Status,
                     IsDuplicate,
                     IsEdited,
+                    IsActive,
                     CreatedAt,
                     UpdatedAt
                 )
@@ -42,10 +42,10 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     @Title,
                     @Description,
                     @Category,
-                    @Location,
                     @Status,
                     @IsDuplicate,
                     @IsEdited,
+                    @IsActive,
                     @CreatedAt,
                     @UpdatedAt
                 );
@@ -74,17 +74,15 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Id,
                     c.Title,
                     c.Category,
-                    c.Location,
                     c.Status,
                     c.IsDuplicate,
                     c.IsEdited,
                     c.CreatedAt,
-                    c.UpdatedAt,
-                    u.Username AS SubmitterUsername
+                    c.UpdatedAt
                 FROM Complaints c
-                JOIN Users u ON c.UserId = u.UserId
                 WHERE c.UserId = @UserId
-                  AND c.Status != 4
+                  AND c.IsActive = 1
+                  AND c.Status != 3
                 ORDER BY c.CreatedAt DESC;";
 
             using var connection = _dbContext.CreateConnection();
@@ -107,16 +105,14 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Title,
                     c.Description,
                     c.Category,
-                    c.Location,
                     c.Status,
                     c.IsDuplicate,
                     c.IsEdited,
                     c.CreatedAt,
-                    c.UpdatedAt,
-                    u.Username AS SubmitterUsername
+                    c.UpdatedAt
                 FROM Complaints c
-                JOIN Users u ON c.UserId = u.UserId
-                WHERE c.Id = @Id;";
+                WHERE c.Id = @Id
+                  AND c.IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -137,19 +133,17 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Id,
                     c.Title,
                     c.Category,
-                    c.Location,
                     c.Status,
                     c.IsDuplicate,
                     c.IsEdited,
                     c.CreatedAt,
-                    c.UpdatedAt,
-                    u.Username AS SubmitterUsername
+                    c.UpdatedAt
                 FROM Complaints c
-                JOIN Users u ON c.UserId = u.UserId
-                WHERE (@Status IS NULL OR c.Status = @Status)
+                WHERE c.IsActive = 1
+                  AND (@Status IS NULL OR c.Status = @Status)
                   AND (@Category IS NULL OR c.Category = @Category)
                   AND (@Search IS NULL OR c.Title LIKE '%' + @Search + '%')
-                  AND c.Status != 4
+                  AND c.Status != 3
                 ORDER BY c.CreatedAt DESC;";
 
             using var connection = _dbContext.CreateConnection();
@@ -171,16 +165,14 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Id,
                     c.Title,
                     c.Category,
-                    c.Location,
                     c.Status,
                     c.IsDuplicate,
                     c.IsEdited,
                     c.CreatedAt,
-                    c.UpdatedAt,
-                    u.Username AS SubmitterUsername
+                    c.UpdatedAt
                 FROM Complaints c
-                JOIN Users u ON c.UserId = u.UserId
-                WHERE c.Status = 4
+                WHERE c.IsActive = 1
+                  AND c.Status = 3
                 ORDER BY c.UpdatedAt DESC;";
 
             using var connection = _dbContext.CreateConnection();
@@ -197,17 +189,15 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     c.Id,
                     c.Title,
                     c.Category,
-                    c.Location,
                     c.Status,
                     c.IsDuplicate,
                     c.IsEdited,
                     c.CreatedAt,
-                    c.UpdatedAt,
-                    u.Username AS SubmitterUsername
+                    c.UpdatedAt
                 FROM Complaints c
-                JOIN Users u ON c.UserId = u.UserId
                 WHERE c.UserId = @UserId
-                  AND c.Status = 4
+                  AND c.IsActive = 1
+                  AND c.Status = 3
                 ORDER BY c.UpdatedAt DESC;";
 
             using var connection = _dbContext.CreateConnection();
@@ -222,7 +212,7 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
         }
 
         public async Task<bool> UpdateAsync(int complaintId, string title, string description,
-                                             int category, string location, DateTime updatedAt)
+                                             int category, DateTime updatedAt)
         {
             const string sql = @"
                 UPDATE Complaints
@@ -230,9 +220,9 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     Title = @Title,
                     Description = @Description,
                     Category = @Category,
-                    Location = @Location,
                     UpdatedAt = @UpdatedAt
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -242,7 +232,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 Title = title,
                 Description = description,
                 Category = category,
-                Location = location,
                 UpdatedAt = updatedAt
             });
 
@@ -269,7 +258,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 SET
                     Status = @Status,
                     UpdatedAt = @UpdatedAt
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -303,7 +293,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 SET
                     IsDuplicate = @IsDuplicate,
                     UpdatedAt = @UpdatedAt
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -337,7 +328,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 SET
                     IsEdited = 1,
                     UpdatedAt = @UpdatedAt
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -366,8 +358,12 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
         public async Task<bool> DeleteAsync(int complaintId)
         {
             const string sql = @"
-                DELETE FROM Complaints
+                UPDATE Complaints
+                SET
+                    IsActive = 0,
+                    UpdatedAt = GETUTCDATE()
                 WHERE Id = @Id
+                  AND IsActive = 1
                   AND Status = 0;";
 
             using var connection = _dbContext.CreateConnection();
@@ -377,14 +373,14 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
             if (rows > 0)
             {
                 _logger.LogInformation(
-                    "Deleted complaint with Id {ComplaintId}",
+                    "Soft-deleted complaint with Id {ComplaintId}",
                     complaintId);
 
                 return true;
             }
 
             _logger.LogWarning(
-                "Failed to delete complaint with Id {ComplaintId}. Not found or not Pending.",
+                "Failed to soft-delete complaint with Id {ComplaintId}. Not found, inactive, or not Pending.",
                 complaintId);
 
             return false;
@@ -403,6 +399,7 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                         SELECT 1
                         FROM Complaints
                         WHERE Id = @Id
+                          AND IsActive = 1
                     )
                     THEN CAST(1 AS BIT)
                     ELSE CAST(0 AS BIT)
@@ -420,7 +417,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
             const string sql = @"
                 SELECT UserId
                 FROM Complaints
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -434,7 +432,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
             const string sql = @"
                 SELECT Status
                 FROM Complaints
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -499,10 +498,8 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     cu.OldStatus,
                     cu.NewStatus,
                     cu.NoteText,
-                    cu.CreatedAt,
-                    u.Username AS UpdatedByUsername
+                    cu.CreatedAt
                 FROM ComplaintUpdates cu
-                JOIN Users u ON cu.UpdatedByUserId = u.UserId
                 WHERE cu.ComplaintId = @ComplaintId
                 ORDER BY cu.CreatedAt ASC;";
 
@@ -529,10 +526,10 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     SUM(CASE WHEN Status = 0 THEN 1 ELSE 0 END) AS Pending,
                     SUM(CASE WHEN Status = 1 THEN 1 ELSE 0 END) AS InProgress,
                     SUM(CASE WHEN Status = 2 THEN 1 ELSE 0 END) AS Resolved,
-                    SUM(CASE WHEN Status = 3 THEN 1 ELSE 0 END) AS Closed,
-                    SUM(CASE WHEN Status = 4 THEN 1 ELSE 0 END) AS Irrelevant
+                    SUM(CASE WHEN Status = 3 THEN 1 ELSE 0 END) AS Irrelevant
                 FROM Complaints
-                WHERE UserId = @UserId;";
+                WHERE UserId = @UserId
+                  AND IsActive = 1;";
 
             using var connection = _dbContext.CreateConnection();
 
@@ -553,16 +550,17 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     SUM(CASE WHEN Status = 0 THEN 1 ELSE 0 END) AS Pending,
                     SUM(CASE WHEN Status = 1 THEN 1 ELSE 0 END) AS InProgress,
                     SUM(CASE WHEN Status = 2 THEN 1 ELSE 0 END) AS Resolved,
-                    SUM(CASE WHEN Status = 3 THEN 1 ELSE 0 END) AS Closed,
-                    SUM(CASE WHEN Status = 4 THEN 1 ELSE 0 END) AS Irrelevant
-                FROM Complaints;
+                    SUM(CASE WHEN Status = 3 THEN 1 ELSE 0 END) AS Irrelevant
+                FROM Complaints
+                WHERE IsActive = 1;
 
                 SELECT COUNT(*) FROM Members;
 
                 SELECT COUNT(*) FROM Members WHERE IsRegistered = 1;
 
                 SELECT COUNT(*) FROM Complaints
-                WHERE CAST(CreatedAt AS DATE) = CAST(GETUTCDATE() AS DATE);";
+                WHERE IsActive = 1
+                  AND CAST(CreatedAt AS DATE) = CAST(GETUTCDATE() AS DATE);";
 
             using var connection = _dbContext.CreateConnection();
 

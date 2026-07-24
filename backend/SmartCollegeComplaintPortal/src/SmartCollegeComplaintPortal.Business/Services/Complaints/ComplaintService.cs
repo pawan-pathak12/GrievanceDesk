@@ -57,10 +57,10 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
                 Title = request.Title.Trim(),
                 Description = request.Description.Trim(),
                 Category = request.Category,
-                Location = request.Location.Trim(),
                 Status = ComplaintStatus.Pending,
                 IsDuplicate = false,
                 IsEdited = false,
+                IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -188,7 +188,6 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
                 request.Title.Trim(),
                 request.Description.Trim(),
                 (int)request.Category,
-                request.Location.Trim(),
                 now);
 
             if (!updated)
