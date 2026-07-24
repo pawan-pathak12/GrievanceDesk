@@ -17,7 +17,7 @@ export default function Sidebar() {
         <div className="sidebar-logo-icon">🎓</div>
         <div>
           <h2>GrievanceDesk</h2>
-          <span>{isAdmin ? 'Admin Dashboard' : 'User Dashboard'}</span>
+          <span>{isAdmin ? 'Admin Portal' : 'User Portal'}</span>
         </div>
       </div>
 
@@ -33,15 +33,21 @@ export default function Sidebar() {
               Dashboard
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to={ROUTES.MY_COMPLAINTS}
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-            >
-              <span className="nav-icon">📋</span>
-              My Complaints
-            </NavLink>
-          </li>
+
+          {/* My Complaints — User only */}
+          {!isAdmin && (
+            <li>
+              <NavLink
+                to={ROUTES.MY_COMPLAINTS}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">📋</span>
+                My Complaints
+              </NavLink>
+            </li>
+          )}
+
+          {/* Admin Panel — Admin only */}
           {isAdmin && (
             <li>
               <NavLink
@@ -49,7 +55,7 @@ export default function Sidebar() {
                 className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               >
                 <span className="nav-icon">⚙️</span>
-                Admin Panel
+                All Complaints
               </NavLink>
             </li>
           )}
@@ -57,9 +63,18 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-bottom">
-        <button className="sidebar-link" onClick={handleLogout} style={{ width: '100%', border: 'none', background: 'none', textAlign: 'left' }}>
+        <div className="sidebar-user">
+          <div className="sidebar-avatar">
+            {(user?.firstName?.[0] || '?').toUpperCase()}
+          </div>
+          <div className="sidebar-user-info">
+            <span className="sidebar-user-name">{user?.firstName} {user?.lastName}</span>
+            <span className="sidebar-user-role">{isAdmin ? 'Administrator' : 'User'}</span>
+          </div>
+        </div>
+        <button className="sidebar-link logout-btn" onClick={handleLogout}>
           <span className="nav-icon">🚪</span>
-          Logout
+          Sign Out
         </button>
       </div>
     </aside>

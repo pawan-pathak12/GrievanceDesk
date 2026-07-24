@@ -10,6 +10,9 @@ import LoginPage from './pages/auth/LoginPage';
 import CheckEmailPage from './pages/auth/CheckEmailPage';
 import VerifyOtpPage from './pages/auth/VerifyOtpPage';
 import CreatePasswordPage from './pages/auth/CreatePasswordPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ForgotVerifyOtpPage from './pages/auth/ForgotVerifyOtpPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // User pages
 import DashboardPage from './pages/user/DashboardPage';
@@ -37,6 +40,11 @@ export default function App() {
             <Route path={ROUTES.REGISTER_EMAIL} element={<CheckEmailPage />} />
             <Route path={ROUTES.REGISTER_OTP} element={<VerifyOtpPage />} />
             <Route path={ROUTES.REGISTER_PASSWORD} element={<CreatePasswordPage />} />
+
+            {/* Forgot Password Flow */}
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/forgot-password/verify" element={<ForgotVerifyOtpPage />} />
+            <Route path="/forgot-password/reset" element={<ResetPasswordPage />} />
 
             {/* Protected - App Layout */}
             <Route element={

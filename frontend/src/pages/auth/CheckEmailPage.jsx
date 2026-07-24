@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
+import AuthBrand from '../../components/auth/AuthBrand';
 import '../../styles/auth.css';
 
 export default function CheckEmailPage() {
@@ -29,40 +30,46 @@ export default function CheckEmailPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-logo">
-        <div className="auth-logo-icon">🎓</div>
-        <h1>GrievanceDesk</h1>
-        <p>Institutional Efficiency & Fairness</p>
-      </div>
+      <AuthBrand />
 
-      <div className="auth-card">
-        <h2>Register</h2>
-        <p className="subtitle">Enter your organization email to get started</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <div className="input-wrapper">
-              <span className="input-icon">✉️</span>
-              <input
-                type="email"
-                placeholder="your-email@organization.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+      <div className="auth-form-panel">
+        <div className="auth-form-container">
+          <div className="auth-steps">
+            <div className="auth-step active"></div>
+            <div className="auth-step"></div>
+            <div className="auth-step"></div>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Sending OTP...' : 'Send Verification Code →'}
-          </button>
-        </form>
+          <div className="auth-form-header">
+            <h2>Create Account</h2>
+            <p>Step 1 of 3 — Verify your organization email</p>
+          </div>
 
-        <div className="auth-divider">or</div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Organization Email</label>
+              <div className="input-wrapper">
+                <span className="input-icon">✉️</span>
+                <input
+                  type="email"
+                  placeholder="name@organization.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-        <div className="auth-footer">
-          Already have an account? <Link to={ROUTES.LOGIN}>Back to Login</Link>
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Sending OTP...' : 'Send Verification Code →'}
+            </button>
+          </form>
+
+          <div className="auth-divider">or</div>
+
+          <div className="auth-footer">
+            Already have an account? <Link to={ROUTES.LOGIN}>Sign in</Link>
+          </div>
         </div>
       </div>
     </div>

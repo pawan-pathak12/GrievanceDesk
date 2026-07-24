@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
+import AuthBrand from '../../components/auth/AuthBrand';
 import '../../styles/auth.css';
 
 export default function VerifyOtpPage() {
@@ -13,6 +14,7 @@ export default function VerifyOtpPage() {
   const location = useLocation();
   const toast = useToast();
   const email = location.state?.email;
+  const isForgot = location.state?.forgot;
 
   useEffect(() => {
     if (!email) navigate(ROUTES.REGISTER_EMAIL, { replace: true });
@@ -23,15 +25,21 @@ export default function VerifyOtpPage() {
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
   }
 
   function handleKeyDown(index, e) {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+  }
+
+  function handlePaste(e) {
+    e.preventDefault();
+    const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (paste.length === 6) {
+      setOtp(paste.split(''));
+      inputRefs.current[5]?.focus();
     }
   }
 
@@ -45,8 +53,12 @@ export default function VerifyOtpPage() {
     setLoading(false);
 
     if (res.isSuccess) {
-      toast.success(res.data?.message || 'OTP verified successfully');
-      navigate(ROUTES.REGISTER_PASSWORD, { state: { email } });
+      toast.success(res.data?.message || 'OTP verified');
+      if (isForgot) {
+        navigate('/forgot-password/reset', { state: { email } });
+      } else {
+        navigate(ROUTES.REGISTER_PASSWORD, { state: { email } });
+      }
     } else {
       toast.error(res.errors?.[0] || 'Invalid OTP');
     }
@@ -54,54 +66,54 @@ export default function VerifyOtpPage() {
 
   async function handleResend() {
     const res = await authApi.checkEmail(email);
-    if (res.isSuccess) {
-      toast.success('OTP resent to your email');
-    } else {
-      toast.error(res.errors?.[0] || 'Failed to resend OTP');
-    }
+    if (res.isSuccess) toast.success('OTP resent to your email');
+    else toast.error(res.errors?.[0] || 'Failed to resend');
   }
 
   return (
     <div className="auth-page">
-      <div className="auth-logo">
-        <div className="auth-logo-icon">🎓</div>
-        <h1>GrievanceDesk</h1>
-        <p>Institutional Efficiency & Fairness</p>
-      </div>
+      <AuthBrand />
 
-      <div className="auth-card">
-        <h2>Verify your Email</h2>
-        <p className="subtitle">Enter the 6-digit code sent to your email</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="otp-inputs">
-            {otp.map((digit, i) => (
-              <input
-                key={i}
-                ref={(el) => (inputRefs.current[i] = el)}
-                type="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(i, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(i, e)}
-                autoFocus={i === 0}
-              />
-            ))}
+      <div className="auth-form-panel">
+        <div className="auth-form-container">
+          <div className="auth-steps">
+            <div className="auth-step done"></div>
+            <div className="auth-step active"></div>
+            <div className="auth-step"></div>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
-            {loading ? 'Verifying...' : 'Verify & Continue →'}
-          </button>
-        </form>
+          <div className="auth-form-header">
+            <h2>Verify your Email</h2>
+            <p>Step 2 of 3 — Enter the 6-digit code sent to <strong>{email}</strong></p>
+          </div>
 
-        <div className="resend-link">
-          Didn't receive a code?{' '}
-          <button onClick={handleResend}>Resend code</button>
+          <form onSubmit={handleSubmit}>
+            <div className="otp-inputs" onPaste={handlePaste}>
+              {otp.map((digit, i) => (
+                <input
+                  key={i}
+                  ref={(el) => (inputRefs.current[i] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(i, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(i, e)}
+                  autoFocus={i === 0}
+                />
+              ))}
+            </div>
+
+            <button type="submit" className="btn-primary" disabled={loading || otp.join('').length !== 6}>
+              {loading ? 'Verifying...' : 'Verify & Continue →'}
+            </button>
+          </form>
+
+          <div className="resend-link">
+            Didn't receive a code?{' '}
+            <button onClick={handleResend}>Resend code</button>
+          </div>
         </div>
-      </div>
-
-      <div className="page-footer">
-        © 2026 GrievanceDesk. Institutional Efficiency & Fairness.
       </div>
     </div>
   );

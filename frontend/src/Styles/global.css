@@ -1,25 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --primary: #1A56DB;
   --primary-hover: #1648B8;
   --primary-light: #E8EFFC;
   --primary-bg: #EBF0FE;
+  --primary-gradient: linear-gradient(135deg, #1A56DB 0%, #3B82F6 50%, #60A5FA 100%);
 
-  --text-dark: #1A1D2E;
-  --text-body: #374151;
-  --text-gray: #6B7280;
-  --text-light: #9CA3AF;
+  --text-dark: #0F172A;
+  --text-body: #334155;
+  --text-gray: #64748B;
+  --text-light: #94A3B8;
 
-  --bg-page: #F8F9FB;
+  --bg-page: #F1F5F9;
   --bg-card: #FFFFFF;
   --bg-sidebar: #FFFFFF;
 
-  --border: #E5E7EB;
-  --border-light: #F3F4F6;
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
 
-  --success: #22C55E;
-  --success-bg: #F0FDF4;
+  --success: #10B981;
+  --success-bg: #ECFDF5;
   --warning: #F59E0B;
   --warning-bg: #FFFBEB;
   --error: #EF4444;
@@ -28,18 +29,23 @@
   --info-bg: #EFF6FF;
 
   --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.12);
 
-  --sidebar-width: 220px;
-  --topbar-height: 60px;
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
 
   --font: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 *, *::before, *::after {
@@ -50,32 +56,43 @@
 
 html {
   font-size: 14px;
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font);
   background: var(--bg-page);
   color: var(--text-body);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
   color: var(--primary);
   text-decoration: none;
+  transition: var(--transition);
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  opacity: 0.85;
 }
 
 button {
   cursor: pointer;
   font-family: var(--font);
+  transition: var(--transition);
 }
 
 input, select, textarea {
   font-family: var(--font);
+  transition: var(--transition);
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff;
 }
 
 .page-loading {
