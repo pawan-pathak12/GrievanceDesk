@@ -33,7 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerPolicy(builder.Configuration);
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddCorsPolicy(builder.Configuration);
+builder.Services.AddCorsPolicy(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 if (app.Environment.IsProduction())
