@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
 using System.Net;
 using System.Net.Mail;
@@ -47,11 +47,11 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
 
         public async Task SendOtpEmailAsync(string to, string otp)
         {
-            var subject = "Your OTP - Student Event Registration Portal";
+            var subject = "Your OTP - GrievanceDesk";
             var html = $@"
         <div style='font-family:Arial,sans-serif;max-width:500px;
             margin:0 auto;padding:24px;'>
-            <h2 style='color:#1A1D2E;'>Student Event Registration Portal</h2>
+            <h2 style='color:#1A1D2E;'>GrievanceDesk</h2>
             <p>Your OTP code is:</p>
             <div style='font-size:36px;font-weight:bold;
                 letter-spacing:8px;color:#5B4FE8;
@@ -75,7 +75,7 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
       string temporaryPassword)
         {
             const string subject =
-                "Your Temporary Password - Student Event Registration Portal";
+                "Your Temporary Password - GrievanceDesk";
 
             var safeFullName = WebUtility.HtmlEncode(fullName);
             var safeEmail = WebUtility.HtmlEncode(email);
@@ -89,7 +89,7 @@ namespace SmartCollegeComplaintPortal.Business.Services.Auths
                     color:#1A1D2E;'>
 
             <h2 style='margin-bottom:24px;'>
-                Welcome to Student Event Registration Portal
+                Welcome to GrievanceDesk
             </h2>
 
             <p>Hello {safeFullName},</p>
