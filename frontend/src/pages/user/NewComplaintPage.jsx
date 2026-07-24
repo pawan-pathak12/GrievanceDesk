@@ -17,13 +17,13 @@ export default function NewComplaintPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.title || !form.description || form.category === '') return;
+    if (!form.title.trim() || !form.description.trim() || form.category === '') return;
 
     setLoading(true);
     const res = await complaintApi.create({
-      title: form.title,
-      description: form.description,
-      category: parseInt(form.category),
+      title: form.title.trim(),
+      description: form.description.trim(),
+      category: Number(form.category),
     });
     setLoading(false);
 
@@ -37,11 +37,11 @@ export default function NewComplaintPage() {
 
   return (
     <div className="complaint-form-page">
-      <Link to={ROUTES.MY_COMPLAINTS} className="back-link">← Back to List</Link>
+      <Link to={ROUTES.MY_COMPLAINTS} className="back-link">Back to complaints</Link>
 
       <div className="page-header">
         <h1>Submit New Complaint</h1>
-        <p>Please provide clear details to help us resolve the issue efficiently.</p>
+        <p>Provide enough context for the right team to understand and resolve the issue.</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -51,13 +51,14 @@ export default function NewComplaintPage() {
             <input
               type="text"
               name="title"
-              placeholder="Briefly summarize the issue..."
+              placeholder="Briefly summarize the issue"
               value={form.title}
               onChange={handleChange}
               required
+              minLength={5}
               maxLength={200}
             />
-            <div className="form-hint">Example: Course Registration Portal Connectivity Issue</div>
+            <div className="form-hint">{form.title.length}/200 characters</div>
           </div>
 
           <div className="form-group">
@@ -74,13 +75,14 @@ export default function NewComplaintPage() {
             <label>Full Description</label>
             <textarea
               name="description"
-              placeholder="Provide as much detail as possible, including dates, locations, and involved parties..."
+              placeholder="Include dates, locations, affected services, and any steps already taken"
               value={form.description}
               onChange={handleChange}
               required
-              maxLength={2000}
+              minLength={10}
+              maxLength={5000}
             />
-            <div className="form-hint">Maximum 2000 characters · {form.description.length}/2000</div>
+            <div className="form-hint">{form.description.length}/5000 characters</div>
           </div>
         </div>
 
@@ -89,7 +91,7 @@ export default function NewComplaintPage() {
             Cancel
           </button>
           <button type="submit" className="btn-submit" disabled={loading}>
-            {loading ? 'Submitting...' : '▶ Submit Complaint'}
+            {loading ? 'Submitting...' : 'Submit Complaint'}
           </button>
         </div>
       </form>

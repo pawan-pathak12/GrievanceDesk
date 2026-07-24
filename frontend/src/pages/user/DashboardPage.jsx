@@ -8,6 +8,7 @@ import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
+import { formatDate } from '../../utils/enums';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
@@ -31,6 +32,7 @@ export default function DashboardPage() {
     else toast.error(statsRes.errors?.[0] || 'Failed to load dashboard');
 
     if (complaintsRes.isSuccess) setComplaints(complaintsRes.data || []);
+    else toast.error(complaintsRes.errors?.[0] || 'Failed to load complaints');
 
     setLoading(false);
   }
@@ -41,55 +43,69 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <h1>My Submissions</h1>
-        <p>Tracking your {stats?.totalComplaints || 0} active and past institutional complaints.</p>
+      <div className="page-header page-header-row">
+        <div>
+          <h1>My Submissions</h1>
+          <p>Track active and resolved complaints across your institution.</p>
+        </div>
+        <button className="btn-submit" onClick={() => navigate(ROUTES.NEW_COMPLAINT)}>
+          New Complaint
+        </button>
       </div>
 
       <div className="stats-grid">
-        <StatCard label="Total Complaints" value={stats?.totalComplaints || 0} icon="📋" />
-        <StatCard label="Resolved" value={stats?.resolved || 0} icon="✅" />
-        <StatCard label="In Progress" value={stats?.inProgress || 0} icon="🔄" />
-        <StatCard label="Pending" value={stats?.pending || 0} icon="💬" />
+        <StatCard label="Total" value={stats?.totalComplaints || 0} icon="T" />
+        <StatCard label="Resolved" value={stats?.resolved || 0} icon="R" color="success" />
+        <StatCard label="In Progress" value={stats?.inProgress || 0} icon="P" color="info" />
+        <StatCard label="Pending" value={stats?.pending || 0} icon="N" color="warning" />
       </div>
 
       <div className="data-table-wrapper">
         <div className="table-header">
-          <h2>Recent Submissions</h2>
+          <div>
+            <h2>Recent Submissions</h2>
+            <span>{recent.length} latest complaints</span>
+          </div>
+          <button className="btn-outline" onClick={() => navigate(ROUTES.MY_COMPLAINTS)}>
+            View All
+          </button>
         </div>
         {recent.length === 0 ? (
           <div className="empty-state">
-            <p>No complaints submitted yet.</p>
+            <strong>No complaints submitted yet</strong>
+            <p>Create your first complaint and it will appear here.</p>
           </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Case ID</th>
-                <th>Category</th>
-                <th>Subject</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recent.map((c) => (
-                <tr key={c.id}>
-                  <td><span className="table-id">#{String(c.id).padStart(3, '0')}</span></td>
-                  <td><CategoryBadge category={c.category} /></td>
-                  <td>{c.title}</td>
-                  <td><StatusBadge status={c.status} /></td>
-                  <td>{new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                  <td>
-                    <span className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
-                      👁️
-                    </span>
-                  </td>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Category</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recent.map((c) => (
+                  <tr key={c.id}>
+                    <td><span className="table-id">#{String(c.id).padStart(3, '0')}</span></td>
+                    <td><CategoryBadge category={c.category} /></td>
+                    <td className="table-title">{c.title}</td>
+                    <td><StatusBadge status={c.status} /></td>
+                    <td>{formatDate(c.createdAt)}</td>
+                    <td>
+                      <button className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
+                        Open
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

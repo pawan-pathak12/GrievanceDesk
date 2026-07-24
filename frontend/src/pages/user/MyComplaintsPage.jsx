@@ -6,6 +6,7 @@ import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
+import { formatDate } from '../../utils/enums';
 
 export default function MyComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
@@ -29,56 +30,62 @@ export default function MyComplaintsPage() {
 
   return (
     <div>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className="page-header page-header-row">
         <div>
           <h1>My Complaints</h1>
-          <p>All your submitted complaints</p>
+          <p>Review every complaint you have submitted.</p>
         </div>
         <button className="btn-submit" onClick={() => navigate(ROUTES.NEW_COMPLAINT)}>
-          + New Complaint
+          New Complaint
         </button>
       </div>
 
       <div className="data-table-wrapper">
         <div className="table-header">
-          <h2>All Submissions</h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-gray)' }}>
-            Showing {complaints.length} complaints
-          </span>
+          <div>
+            <h2>All Submissions</h2>
+            <span>Showing {complaints.length} complaints</span>
+          </div>
         </div>
         {complaints.length === 0 ? (
           <div className="empty-state">
-            <p>You haven't submitted any complaints yet.</p>
+            <strong>No complaints submitted yet</strong>
+            <p>When you submit one, its status and history will be available here.</p>
           </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Case ID</th>
-                <th>Category</th>
-                <th>Subject</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {complaints.map((c) => (
-                <tr key={c.id}>
-                  <td><span className="table-id">#{String(c.id).padStart(3, '0')}</span></td>
-                  <td><CategoryBadge category={c.category} /></td>
-                  <td>{c.title} {c.isEdited && <span style={{ fontSize: '0.7rem', color: 'var(--warning)' }}>edited</span>}</td>
-                  <td><StatusBadge status={c.status} /></td>
-                  <td>{new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                  <td>
-                    <span className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
-                      View Details
-                    </span>
-                  </td>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Case</th>
+                  <th>Category</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {complaints.map((c) => (
+                  <tr key={c.id}>
+                    <td><span className="table-id">#{String(c.id).padStart(3, '0')}</span></td>
+                    <td><CategoryBadge category={c.category} /></td>
+                    <td className="table-title">
+                      {c.title}
+                      {c.isEdited && <span className="inline-flag">Edited</span>}
+                    </td>
+                    <td><StatusBadge status={c.status} /></td>
+                    <td>{formatDate(c.createdAt)}</td>
+                    <td>
+                      <button className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
+                        Open
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
