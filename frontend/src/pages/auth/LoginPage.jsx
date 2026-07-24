@@ -91,8 +91,8 @@ export default function LoginPage() {
       <div className="auth-form-panel">
         <div className="auth-form-container">
           <div className="auth-form-header">
-            <h2>Welcome back</h2>
-            <p>Sign in to your GrievanceDesk account</p>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue.</p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
