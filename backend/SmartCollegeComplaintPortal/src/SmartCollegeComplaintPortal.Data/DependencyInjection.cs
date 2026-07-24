@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartCollegeComplaintPortal.Data.Database;
@@ -16,13 +16,14 @@ namespace SmartCollegeComplaintPortal.Data
             services.AddDbContext<SystemEfCoreDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("StudentCourseManagement.Data")
+                    b => b.MigrationsAssembly("SmartCollegeComplaintPortal.Data")
                     );
 
             });
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOtpRepository, OtpRepository>();
+            services.AddScoped<IComplaintRepository, ComplaintRepository>();
 
             return services;
         }

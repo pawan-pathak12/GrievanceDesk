@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Interfaces\Members\" />
     <Folder Include="QueryResult\" />
   </ItemGroup>
 
