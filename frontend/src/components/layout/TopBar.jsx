@@ -8,24 +8,22 @@ export default function TopBar() {
 
   const initials = user
     ? `${(user.firstName || '')[0] || ''}${(user.lastName || '')[0] || ''}`.toUpperCase()
-    : '?';
+    : 'U';
 
   return (
     <div className="topbar">
-      <div className="topbar-search">
-        <span className="search-icon">🔍</span>
-        <input type="text" placeholder="Search complaints, IDs, or categories..." />
+      <div className="topbar-title">
+        <span>{isAdmin ? 'Admin workspace' : 'Complaint workspace'}</span>
+        <strong>{user?.firstName ? `Hello, ${user.firstName}` : 'Welcome back'}</strong>
       </div>
 
       <div className="topbar-actions">
         {!isAdmin && (
           <button className="btn-new-ticket" onClick={() => navigate(ROUTES.NEW_COMPLAINT)}>
-            + New Ticket
+            New Complaint
           </button>
         )}
-        <button className="topbar-btn" title="Notifications">🔔</button>
-        <button className="topbar-btn" title="Settings">⚙️</button>
-        <div className="topbar-avatar">{initials}</div>
+        <div className="topbar-avatar">{initials || 'U'}</div>
       </div>
     </div>
   );

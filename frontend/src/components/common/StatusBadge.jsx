@@ -1,4 +1,4 @@
-import { StatusLabels } from '../../utils/enums';
+import { formatStatus, normalizeStatus } from '../../utils/enums';
 
 const statusColors = {
   0: 'pending',
@@ -8,7 +8,8 @@ const statusColors = {
 };
 
 export default function StatusBadge({ status }) {
-  const cls = statusColors[status] || 'pending';
-  const label = StatusLabels[status] || 'Unknown';
+  const normalized = normalizeStatus(status);
+  const cls = statusColors[normalized] || 'pending';
+  const label = formatStatus(status);
   return <span className={`badge badge-status badge-${cls}`}>{label}</span>;
 }
