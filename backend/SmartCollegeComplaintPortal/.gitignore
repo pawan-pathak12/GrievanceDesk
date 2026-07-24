@@ -1,0 +1,39 @@
+appsettings.json	
+.vs/
+.bin/
+.obj/
+.idea	
+.idea/
+appsettings.Development.json
+appsettings.Local.json
+appsettings.json
+appsettings.Test.json
+Logs/
+log
+StudentCourseManagement.API/Logs
+**/readme prompt
+Frontend_README_Prompt.md
+Backend README Prompt.md
+Hackathon Master Checklist.md
+
+obj/Debug/net9.0
+obj/Debug/net9.0/
+obj
+bin
+# Build output folders
+bin/
+obj/
+
+
+# Visual Studio build artifacts
+*.user
+*.suo
+*.cache
+*.log
+
+# NuGet packages
+*.nupkg
+packages/
+TestResults
+TestResults/**
+**/TestResults

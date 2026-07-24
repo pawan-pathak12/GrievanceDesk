@@ -1,0 +1,150 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned to match global.json (sdk.version: 9.0.315)
+  DOTNET_VERSION: 9.0.315
+  CONFIGURATION: Release
+  PUBLISH_DIR: ./publish
+
+jobs:
+  ci:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/*.sln
+            **/*.slnx
+            global.json
+
+      - name: Resolve solution file
+        id: solution
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(*.sln *.slnx)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::No solution file (*.sln or *.slnx) found in the repository root."
+            exit 1
+          fi
+          if [ ${#files[@]} -gt 1 ]; then
+            echo "::warning::Multiple solution files found. Using ${files[0]}."
+          fi
+          echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ steps.solution.outputs.path }}"
+
+      - name: Build
+        run: dotnet build "${{ steps.solution.outputs.path }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Run tests
+        if: hashFiles('tests/**') != ''
+        run: dotnet test "${{ steps.solution.outputs.path }}" --configuration ${{ env.CONFIGURATION }} --no-build --verbosity normal
+
+  deploy:
+    name: Publish and Deploy
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: production
+   
+
+    steps:
+      - name: Validate deployment secrets
+        shell: bash
+        env:
+          AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          missing=()
+          [ -z "$AZURE_WEBAPP_NAME" ] && missing+=("AZURE_WEBAPP_NAME")
+          [ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ] && missing+=("AZURE_WEBAPP_PUBLISH_PROFILE")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required GitHub Secrets: ${missing[*]}. Add them under Settings → Secrets and variables → Actions (or the production environment)."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/*.sln
+            **/*.slnx
+            global.json
+
+      - name: Resolve API project
+        id: api
+        shell: bash
+        run: |
+          mapfile -t projects < <(grep -rl 'Microsoft.NET.Sdk.Web' --include='*.csproj' . | sort)
+          if [ ${#projects[@]} -eq 0 ]; then
+            echo "::error::No ASP.NET Core Web API project (*.csproj with Microsoft.NET.Sdk.Web) found."
+            exit 1
+          fi
+          if [ ${#projects[@]} -gt 1 ]; then
+            echo "::warning::Multiple Web API projects found. Publishing ${projects[0]}."
+          fi
+          echo "path=${projects[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ steps.api.outputs.path }}"
+
+      - name: Build API
+        run: dotnet build "${{ steps.api.outputs.path }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Publish API
+        run: dotnet publish "${{ steps.api.outputs.path }}" --configuration ${{ env.CONFIGURATION }} --output ${{ env.PUBLISH_DIR }} --no-restore --no-build
+
+      - name: Upload published artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-publish
+          path: ${{ env.PUBLISH_DIR }}
+          retention-days: 7
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.PUBLISH_DIR }}
