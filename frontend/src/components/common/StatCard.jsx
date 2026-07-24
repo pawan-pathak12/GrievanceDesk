@@ -1,4 +1,4 @@
-import '../../styles/components.css';
+import '../../Styles/components.css';
 
 export default function StatCard({ label, value, icon, color }) {
   return (

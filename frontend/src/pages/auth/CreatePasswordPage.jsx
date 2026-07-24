@@ -4,7 +4,7 @@ import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 import AuthBrand from '../../components/auth/AuthBrand';
-import '../../styles/auth.css';
+import '../../Styles/auth.css';
 
 export default function CreatePasswordPage() {
   const [form, setForm] = useState({ firstName: '', lastName: '', password: '', confirmPassword: '' });

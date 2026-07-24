@@ -25,9 +25,9 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminComplaintsPage from './pages/admin/AdminComplaintsPage';
 import AdminComplaintDetailPage from './pages/admin/AdminComplaintDetailPage';
 
-import './styles/global.css';
-import './styles/layout.css';
-import './styles/components.css';
+import './Styles/global.css';
+import './Styles/layout.css';
+import './Styles/components.css';
 
 export default function App() {
   return (

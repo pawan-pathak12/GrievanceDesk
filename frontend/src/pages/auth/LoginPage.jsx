@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 import AuthBrand from '../../components/auth/AuthBrand';
-import '../../styles/auth.css';
+import '../../Styles/auth.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

@@ -1,4 +1,4 @@
-import '../../styles/auth.css';
+import '../../Styles/auth.css';
 
 export default function AuthBrand() {
   return (
