@@ -1,7 +1,7 @@
 .auth-page {
   width: min(880px, calc(100% - 32px));
-  min-height: min(500px, calc(100vh - 40px));
-  margin: max(20px, calc(50vh - 250px)) auto;
+  min-height: min(540px, calc(100vh - 40px));
+  margin: max(20px, calc(50vh - 270px)) auto;
   display: grid;
   grid-template-columns: minmax(320px, 0.78fr) minmax(440px, 1.22fr);
   background: #ffffff;
@@ -121,7 +121,7 @@
 .auth-form-panel {
   display: grid;
   place-items: center;
-  padding: 36px 44px;
+  padding: 40px 44px;
   background: #ffffff;
   overflow-y: auto;
 }
@@ -129,14 +129,16 @@
 .auth-form-container {
   width: 100%;
   max-width: 370px;
+  --auth-control-height: 54px;
+  --auth-form-gap: 20px;
 }
 
 .auth-form-header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .auth-form-header h2 {
-  margin: 0 0 7px;
+  margin: 0 0 12px;
   color: var(--text-dark);
   font-size: 2rem;
   letter-spacing: 0;
@@ -150,7 +152,7 @@
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .input-wrapper {
@@ -170,8 +172,9 @@
 
 .input-wrapper input {
   width: 100%;
-  min-height: 52px;
-  padding: 11px 12px 11px 42px;
+  height: var(--auth-control-height);
+  min-height: var(--auth-control-height);
+  padding: 0 14px 0 46px;
   border: 1px solid #dfe4ec;
   border-radius: 12px;
   background: #f8fafc;
@@ -185,12 +188,12 @@
 
 .login-form {
   display: grid;
-  gap: 18px;
+  gap: var(--auth-form-gap);
 }
 
 .login-form .form-group {
   display: grid;
-  gap: 7px;
+  gap: 8px;
 }
 
 .login-form label {
@@ -203,8 +206,8 @@
 
 .login-form .input-wrapper input {
   width: 100%;
-  height: 54px;
-  min-height: 54px;
+  height: var(--auth-control-height);
+  min-height: var(--auth-control-height);
   padding: 0 48px;
   border: 1px solid #dfe4ec;
   border-radius: 13px;
@@ -281,9 +284,9 @@
 }
 
 .login-submit {
-  height: 50px;
-  min-height: 50px;
-  margin-top: 2px;
+  height: var(--auth-control-height);
+  min-height: var(--auth-control-height);
+  margin-top: 4px;
   border: 0;
   border-radius: 12px;
   background: linear-gradient(135deg, var(--primary), var(--primary-hover));
@@ -303,7 +306,7 @@
 }
 
 .login-register-section {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .toggle-password {
@@ -334,7 +337,8 @@
 
 .btn-primary {
   width: 100%;
-  min-height: 50px;
+  height: var(--auth-control-height);
+  min-height: var(--auth-control-height);
   display: grid;
   place-items: center;
   border: 1px solid var(--primary);
@@ -356,7 +360,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 24px 0;
+  margin: 28px 0;
   color: var(--text-gray);
   font-size: 0.82rem;
 }
@@ -377,14 +381,14 @@
 }
 
 .auth-copyright {
-  margin-top: 20px;
+  margin-top: 24px;
   font-size: 0.78rem;
 }
 
 .auth-steps {
   display: flex;
   gap: 8px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .auth-step {
@@ -406,11 +410,11 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
-  margin: 24px 0;
+  margin: 0;
 }
 
 .otp-inputs input {
-  height: 54px;
+  height: var(--auth-control-height);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-align: center;
@@ -425,7 +429,16 @@
 }
 
 .resend-link {
-  margin-top: 18px;
+  margin-top: 24px;
+}
+
+.auth-form-container > form:not(.login-form) {
+  display: grid;
+  gap: var(--auth-form-gap);
+}
+
+.auth-form-container > form:not(.login-form) .form-group {
+  gap: 8px;
 }
 
 .resend-link button {
