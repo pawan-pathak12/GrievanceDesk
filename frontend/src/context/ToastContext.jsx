@@ -1,9 +1,16 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
+import { Check, Info, X, XCircle } from 'lucide-react';
 import '../Styles/toast.css';
 
 const ToastContext = createContext(null);
 
 let toastId = 0;
+
+const toastDetails = {
+  success: { title: 'Success', Icon: Check },
+  error: { title: 'Something went wrong', Icon: XCircle },
+  info: { title: 'Information', Icon: Info },
+};
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
@@ -25,12 +32,29 @@ export function ToastProvider({ children }) {
     <ToastContext.Provider value={{ success, error, dismiss }}>
       {children}
       <div className="toast-container">
-        {toasts.map((t) => (
-          <div key={t.id} className={`toast toast-${t.type}`}>
-            <span className="toast-icon">{t.type === 'success' ? '✓' : '✕'}</span>
-            <span className="toast-message">{t.message}</span>
-          </div>
-        ))}
+        {toasts.map((toast) => {
+          const { title, Icon } = toastDetails[toast.type] ?? toastDetails.info;
+
+          return (
+            <div key={toast.id} className={`toast toast-${toast.type}`} role="status">
+              <span className="toast-icon" aria-hidden="true">
+                <Icon size={19} strokeWidth={2.4} />
+              </span>
+              <div className="toast-copy">
+                <strong>{title}</strong>
+                <span className="toast-message">{toast.message}</span>
+              </div>
+              <button
+                type="button"
+                className="toast-dismiss"
+                onClick={() => dismiss(toast.id)}
+                aria-label="Dismiss notification"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

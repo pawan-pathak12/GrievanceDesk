@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartCollegeComplaintPortal.Domain.Entities.Auths;
 using SmartCollegeComplaintPortal.Domain.Entities.Complaints;
 using SmartCollegeComplaintPortal.Domain.Entities.Members;
+using SmartCollegeComplaintPortal.Domain.Entities.Notices;
 using SmartCollegeComplaintPortal.Domain.Enums;
 
 namespace SmartCollegeComplaintPortal.Data.Database
@@ -20,6 +21,7 @@ namespace SmartCollegeComplaintPortal.Data.Database
         public DbSet<Member> Members { get; set; }
         public DbSet<Complaint> Complaints { get; set; }
         public DbSet<ComplaintUpdate> ComplaintUpdates { get; set; }
+        public DbSet<Notice> Notices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -86,6 +88,31 @@ namespace SmartCollegeComplaintPortal.Data.Database
                 entity.HasOne<User>()
                     .WithMany()
                     .HasForeignKey(e => e.UpdatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Notice>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Content).IsRequired().HasMaxLength(10000);
+                entity.Property(e => e.Priority).HasDefaultValue(NoticePriority.Normal);
+                entity.Property(e => e.IsPublished).HasDefaultValue(false);
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasQueryFilter(e => !e.IsDeleted);
+
+                entity.HasIndex(e => e.IsPublished);
+                entity.HasIndex(e => e.CreatedAt);
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedBy)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdatedBy)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }

@@ -8,7 +8,9 @@ import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
-import { formatDate } from '../../utils/enums';
+import { formatDate, formatTime } from '../../utils/enums';
+import { Eye } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
@@ -54,7 +56,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="stats-grid">
-        <StatCard label="Total" value={stats?.totalComplaints || 0} icon="T" />
+        <StatCard label="Total Complaints" value={stats?.totalComplaints || 0} icon="T" />
         <StatCard label="Resolved" value={stats?.resolved || 0} icon="R" color="success" />
         <StatCard label="In Progress" value={stats?.inProgress || 0} icon="P" color="info" />
         <StatCard label="Pending" value={stats?.pending || 0} icon="N" color="warning" />
@@ -85,6 +87,7 @@ export default function DashboardPage() {
                   <th>Subject</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th>Time</th>
                   <th></th>
                 </tr>
               </thead>
@@ -96,10 +99,9 @@ export default function DashboardPage() {
                     <td className="table-title">{c.title}</td>
                     <td><StatusBadge status={c.status} /></td>
                     <td>{formatDate(c.createdAt)}</td>
+                    <td>{formatTime(c.createdAt)}</td>
                     <td>
-                      <button className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
-                        Open
-                      </button>
+                      <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))} />
                     </td>
                   </tr>
                 ))}

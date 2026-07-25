@@ -5,14 +5,20 @@ import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../utils/routes';
-import { formatDate } from '../../utils/enums';
+import { formatDate, formatTime } from '../../utils/enums';
+import { markItemsViewed } from '../../utils/viewTracking';
+import { Eye } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 export default function MyComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+  const userKey = user?.userId || user?.id || user?.email || 'member';
 
   useEffect(() => {
     loadComplaints();
@@ -21,7 +27,11 @@ export default function MyComplaintsPage() {
   async function loadComplaints() {
     setLoading(true);
     const res = await complaintApi.getMy();
-    if (res.isSuccess) setComplaints(res.data || []);
+    if (res.isSuccess) {
+      const items = res.data || [];
+      setComplaints(items);
+      markItemsViewed(userKey, 'complaints', items);
+    }
     else toast.error(res.errors?.[0] || 'Failed to load complaints');
     setLoading(false);
   }
@@ -62,6 +72,7 @@ export default function MyComplaintsPage() {
                   <th>Subject</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th>Time</th>
                   <th></th>
                 </tr>
               </thead>
@@ -76,10 +87,9 @@ export default function MyComplaintsPage() {
                     </td>
                     <td><StatusBadge status={c.status} /></td>
                     <td>{formatDate(c.createdAt)}</td>
+                    <td>{formatTime(c.createdAt)}</td>
                     <td>
-                      <button className="table-link" onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))}>
-                        Open
-                      </button>
+                      <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.COMPLAINT_DETAIL.replace(':id', c.id))} />
                     </td>
                   </tr>
                 ))}

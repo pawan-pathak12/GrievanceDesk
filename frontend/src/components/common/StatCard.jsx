@@ -3,7 +3,7 @@ import '../../Styles/components.css';
 export default function StatCard({ label, value, icon, color }) {
   return (
     <div className={`stat-card stat-card-${color || 'default'}`}>
-      <div className="stat-card-info">
+      <div className="stat-card-content">
         <span className="stat-card-label">{label}</span>
         <span className="stat-card-value">{String(value).padStart(2, '0')}</span>
       </div>

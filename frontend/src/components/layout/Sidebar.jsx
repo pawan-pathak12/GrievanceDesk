@@ -1,12 +1,19 @@
-import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { adminApi } from '../../api/adminApi';
+import { noticeApi } from '../../api/noticeApi';
 import { ROUTES } from '../../utils/routes';
+import { getUnreadCount, viewStateEvent } from '../../utils/viewTracking';
+import { LogOut } from 'lucide-react';
 
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({ notices: 0, adminComplaints: 0 });
   const navigate = useNavigate();
+  const location = useLocation();
+  const userKey = user?.userId || user?.id || user?.email || 'member';
 
   useEffect(() => {
     if (!isLogoutDialogOpen) return undefined;
@@ -18,6 +25,33 @@ export default function Sidebar() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isLogoutDialogOpen]);
+
+  const refreshUnreadCounts = useCallback(async () => {
+    if (isAdmin) {
+      const result = await adminApi.getAll();
+      setUnreadCounts({
+        notices: 0,
+        adminComplaints: result.isSuccess ? getUnreadCount(userKey, 'adminComplaints', result.data || []) : 0,
+      });
+      return;
+    }
+
+    const noticesResult = await noticeApi.getPublished();
+
+    setUnreadCounts({
+      notices: noticesResult.isSuccess ? getUnreadCount(userKey, 'notices', noticesResult.data || []) : 0,
+      adminComplaints: 0,
+    });
+  }, [isAdmin, userKey]);
+
+  useEffect(() => {
+    refreshUnreadCounts();
+  }, [location.pathname, refreshUnreadCounts]);
+
+  useEffect(() => {
+    window.addEventListener(viewStateEvent, refreshUnreadCounts);
+    return () => window.removeEventListener(viewStateEvent, refreshUnreadCounts);
+  }, [refreshUnreadCounts]);
 
   function handleLogout() {
     setIsLogoutDialogOpen(true);
@@ -66,6 +100,19 @@ export default function Sidebar() {
             </li>
           )}
 
+          {!isAdmin && (
+            <li>
+              <NavLink
+                to={ROUTES.NOTICES}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">NT</span>
+                Notices
+                {unreadCounts.notices > 0 && <span className="sidebar-unread-count">{unreadCounts.notices > 99 ? '99+' : unreadCounts.notices}</span>}
+              </NavLink>
+            </li>
+          )}
+
           {isAdmin && (
             <li>
               <NavLink
@@ -74,6 +121,19 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">AC</span>
                 All Complaints
+                {unreadCounts.adminComplaints > 0 && <span className="sidebar-unread-count">{unreadCounts.adminComplaints > 99 ? '99+' : unreadCounts.adminComplaints}</span>}
+              </NavLink>
+            </li>
+          )}
+
+          {isAdmin && (
+            <li>
+              <NavLink
+                to={ROUTES.ADMIN_NOTICES}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">NT</span>
+                Notices
               </NavLink>
             </li>
           )}
@@ -89,7 +149,7 @@ export default function Sidebar() {
           </div>
         </div>
         <button className="sidebar-link logout-btn" onClick={handleLogout}>
-          <span className="nav-icon">SO</span>
+          <span className="nav-icon" aria-hidden="true"><LogOut size={16} /></span>
           Sign Out
         </button>
       </div>

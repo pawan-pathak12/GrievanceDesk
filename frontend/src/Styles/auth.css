@@ -391,6 +391,36 @@
   margin-bottom: 24px;
 }
 
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-gray);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.auth-back-link:hover:not(:disabled) {
+  color: var(--primary);
+}
+
+.auth-back-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.auth-back-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .auth-step {
   height: 4px;
   flex: 1;
