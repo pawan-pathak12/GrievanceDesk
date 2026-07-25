@@ -47,12 +47,13 @@ export default function NoticesPage() {
 
   return (
     <div>
-      <div className="page-header">
-        <h1>Notices</h1>
-        <p>Read the latest updates shared by your organization.</p>
+      <div className="page-header page-header-row notice-page-header">
+        <div>
+          <h1>Notices</h1>
+          <p>Read the latest updates shared by your organization.</p>
+        </div>
+        <div className="notice-search"><label htmlFor="notice-search">Search notices</label><input id="notice-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title or content" /></div>
       </div>
-
-      <div className="notice-search"><label htmlFor="notice-search">Search notices</label><input id="notice-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title or content" /></div>
 
       {visibleNotices.length === 0 ? (
         <div className="empty-state notice-empty-state">

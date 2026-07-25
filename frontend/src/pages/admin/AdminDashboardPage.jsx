@@ -50,9 +50,9 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="stats-grid">
-        <StatCard label="Total" value={stats?.totalComplaints || 0} icon="T" />
-        <StatCard label="Today" value={stats?.todayComplaints || 0} icon="D" color="info" />
+        <StatCard label="Total Complaints" value={stats?.totalComplaints || 0} icon="T" />
         <StatCard label="Resolved" value={stats?.resolved || 0} icon="R" color="success" />
+        <StatCard label="In Progress" value={stats?.inProgress || 0} icon="P" color="info" />
         <StatCard label="Pending" value={stats?.pending || 0} icon="P" color="warning" />
       </div>
 

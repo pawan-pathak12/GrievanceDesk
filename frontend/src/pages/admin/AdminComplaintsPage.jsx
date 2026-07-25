@@ -5,8 +5,10 @@ import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../utils/routes';
 import { CategoryOptions, StatusOptions, formatDate } from '../../utils/enums';
+import { markItemsViewed } from '../../utils/viewTracking';
 
 export default function AdminComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
@@ -14,6 +16,8 @@ export default function AdminComplaintsPage() {
   const [filters, setFilters] = useState({ status: '', category: '', search: '' });
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+  const userKey = user?.userId || user?.id || user?.email || 'member';
 
   useEffect(() => {
     loadComplaints();
@@ -27,7 +31,11 @@ export default function AdminComplaintsPage() {
     if (filters.search.trim()) params.search = filters.search.trim();
 
     const res = await adminApi.getAll(params);
-    if (res.isSuccess) setComplaints(res.data || []);
+    if (res.isSuccess) {
+      const items = res.data || [];
+      setComplaints(items);
+      markItemsViewed(userKey, 'adminComplaints', items);
+    }
     else toast.error(res.errors?.[0] || 'Failed to load complaints');
     setLoading(false);
   }

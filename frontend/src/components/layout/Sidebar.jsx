@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { complaintApi } from '../../api/complaintApi';
+import { adminApi } from '../../api/adminApi';
 import { noticeApi } from '../../api/noticeApi';
 import { ROUTES } from '../../utils/routes';
 import { getUnreadCount, viewStateEvent } from '../../utils/viewTracking';
@@ -9,7 +10,7 @@ import { getUnreadCount, viewStateEvent } from '../../utils/viewTracking';
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-  const [unreadCounts, setUnreadCounts] = useState({ complaints: 0, notices: 0 });
+  const [unreadCounts, setUnreadCounts] = useState({ complaints: 0, notices: 0, adminComplaints: 0 });
   const navigate = useNavigate();
   const location = useLocation();
   const userKey = user?.userId || user?.id || user?.email || 'member';
@@ -26,7 +27,15 @@ export default function Sidebar() {
   }, [isLogoutDialogOpen]);
 
   const refreshUnreadCounts = useCallback(async () => {
-    if (isAdmin) return;
+    if (isAdmin) {
+      const result = await adminApi.getAll();
+      setUnreadCounts({
+        complaints: 0,
+        notices: 0,
+        adminComplaints: result.isSuccess ? getUnreadCount(userKey, 'adminComplaints', result.data || []) : 0,
+      });
+      return;
+    }
 
     const [complaintsResult, noticesResult] = await Promise.all([
       complaintApi.getMy(),
@@ -36,6 +45,7 @@ export default function Sidebar() {
     setUnreadCounts({
       complaints: complaintsResult.isSuccess ? getUnreadCount(userKey, 'complaints', complaintsResult.data || []) : 0,
       notices: noticesResult.isSuccess ? getUnreadCount(userKey, 'notices', noticesResult.data || []) : 0,
+      adminComplaints: 0,
     });
   }, [isAdmin, userKey]);
 
@@ -117,6 +127,7 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">AC</span>
                 All Complaints
+                {unreadCounts.adminComplaints > 0 && <span className="sidebar-unread-count">{unreadCounts.adminComplaints > 99 ? '99+' : unreadCounts.adminComplaints}</span>}
               </NavLink>
             </li>
           )}
