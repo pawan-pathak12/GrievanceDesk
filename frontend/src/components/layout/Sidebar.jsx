@@ -1,12 +1,18 @@
-import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { complaintApi } from '../../api/complaintApi';
+import { noticeApi } from '../../api/noticeApi';
 import { ROUTES } from '../../utils/routes';
+import { getUnreadCount, viewStateEvent } from '../../utils/viewTracking';
 
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({ complaints: 0, notices: 0 });
   const navigate = useNavigate();
+  const location = useLocation();
+  const userKey = user?.userId || user?.id || user?.email || 'member';
 
   useEffect(() => {
     if (!isLogoutDialogOpen) return undefined;
@@ -18,6 +24,29 @@ export default function Sidebar() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isLogoutDialogOpen]);
+
+  const refreshUnreadCounts = useCallback(async () => {
+    if (isAdmin) return;
+
+    const [complaintsResult, noticesResult] = await Promise.all([
+      complaintApi.getMy(),
+      noticeApi.getPublished(),
+    ]);
+
+    setUnreadCounts({
+      complaints: complaintsResult.isSuccess ? getUnreadCount(userKey, 'complaints', complaintsResult.data || []) : 0,
+      notices: noticesResult.isSuccess ? getUnreadCount(userKey, 'notices', noticesResult.data || []) : 0,
+    });
+  }, [isAdmin, userKey]);
+
+  useEffect(() => {
+    refreshUnreadCounts();
+  }, [location.pathname, refreshUnreadCounts]);
+
+  useEffect(() => {
+    window.addEventListener(viewStateEvent, refreshUnreadCounts);
+    return () => window.removeEventListener(viewStateEvent, refreshUnreadCounts);
+  }, [refreshUnreadCounts]);
 
   function handleLogout() {
     setIsLogoutDialogOpen(true);
@@ -62,6 +91,20 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">MC</span>
                 My Complaints
+                {unreadCounts.complaints > 0 && <span className="sidebar-unread-count">{unreadCounts.complaints > 99 ? '99+' : unreadCounts.complaints}</span>}
+              </NavLink>
+            </li>
+          )}
+
+          {!isAdmin && (
+            <li>
+              <NavLink
+                to={ROUTES.NOTICES}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">NT</span>
+                Notices
+                {unreadCounts.notices > 0 && <span className="sidebar-unread-count">{unreadCounts.notices > 99 ? '99+' : unreadCounts.notices}</span>}
               </NavLink>
             </li>
           )}
@@ -74,6 +117,18 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">AC</span>
                 All Complaints
+              </NavLink>
+            </li>
+          )}
+
+          {isAdmin && (
+            <li>
+              <NavLink
+                to={ROUTES.ADMIN_NOTICES}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">NT</span>
+                Notices
               </NavLink>
             </li>
           )}

@@ -5,14 +5,18 @@ import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../utils/routes';
 import { formatDate } from '../../utils/enums';
+import { markItemsViewed } from '../../utils/viewTracking';
 
 export default function MyComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+  const userKey = user?.userId || user?.id || user?.email || 'member';
 
   useEffect(() => {
     loadComplaints();
@@ -21,7 +25,11 @@ export default function MyComplaintsPage() {
   async function loadComplaints() {
     setLoading(true);
     const res = await complaintApi.getMy();
-    if (res.isSuccess) setComplaints(res.data || []);
+    if (res.isSuccess) {
+      const items = res.data || [];
+      setComplaints(items);
+      markItemsViewed(userKey, 'complaints', items);
+    }
     else toast.error(res.errors?.[0] || 'Failed to load complaints');
     setLoading(false);
   }

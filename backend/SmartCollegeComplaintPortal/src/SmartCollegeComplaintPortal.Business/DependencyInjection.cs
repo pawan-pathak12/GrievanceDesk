@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SmartCollegeComplaintPortal.Business.Interfaces.Auths;
 using SmartCollegeComplaintPortal.Business.Interfaces.Complaints;
+using SmartCollegeComplaintPortal.Business.Interfaces.Notices;
 using SmartCollegeComplaintPortal.Business.Services.Auths;
 using SmartCollegeComplaintPortal.Business.Services.Complaints;
+using SmartCollegeComplaintPortal.Business.Services.Notices;
 using SmartCollegeComplaintPortal.Data;
 using SmartCollegeComplaintPortal.Data.Database;
 using SmartCollegeComplaintPortal.Domain.Entities.Auths;
@@ -42,6 +44,7 @@ namespace SmartCollegeComplaintPortal.Business
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IComplaintService, ComplaintService>();
+            services.AddScoped<INoticeService, NoticeService>();
 
             #endregion
 

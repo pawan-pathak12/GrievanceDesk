@@ -56,6 +56,13 @@ export function put(path, body) {
   return apiRequest(path, { method: 'PUT', body: JSON.stringify(body) });
 }
 
+export function patch(path, body) {
+  return apiRequest(path, {
+    method: 'PATCH',
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
 export function del(path) {
   return apiRequest(path, { method: 'DELETE' });
 }

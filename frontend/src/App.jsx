@@ -20,11 +20,16 @@ import DashboardPage from './pages/user/DashboardPage';
 import MyComplaintsPage from './pages/user/MyComplaintsPage';
 import NewComplaintPage from './pages/user/NewComplaintPage';
 import ComplaintDetailPage from './pages/user/ComplaintDetailPage';
+import NoticesPage from './pages/user/NoticesPage';
+import NoticeDetailPage from './pages/user/NoticeDetailPage';
 
 // Admin pages
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminComplaintsPage from './pages/admin/AdminComplaintsPage';
 import AdminComplaintDetailPage from './pages/admin/AdminComplaintDetailPage';
+import AdminNoticesPage from './pages/admin/AdminNoticesPage';
+import AdminNoticeFormPage from './pages/admin/AdminNoticeFormPage';
+import AdminNoticeDetailPage from './pages/admin/AdminNoticeDetailPage';
 
 import './Styles/global.css';
 import './Styles/layout.css';
@@ -58,6 +63,8 @@ export default function App() {
               <Route path={ROUTES.MY_COMPLAINTS} element={<MyComplaintsPage />} />
               <Route path={ROUTES.NEW_COMPLAINT} element={<NewComplaintPage />} />
               <Route path={ROUTES.COMPLAINT_DETAIL} element={<ComplaintDetailPage />} />
+              <Route path={ROUTES.NOTICES} element={<NoticesPage />} />
+              <Route path={ROUTES.NOTICE_DETAIL} element={<NoticeDetailPage />} />
 
               {/* Admin routes */}
               <Route path={ROUTES.ADMIN_DASHBOARD} element={
@@ -74,6 +81,18 @@ export default function App() {
                 <ProtectedRoute allowedRoles={['Admin', 0]}>
                   <AdminComplaintDetailPage />
                 </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_NOTICES} element={
+                <ProtectedRoute allowedRoles={['Admin', 0]}><AdminNoticesPage /></ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_NOTICE_NEW} element={
+                <ProtectedRoute allowedRoles={['Admin', 0]}><AdminNoticeFormPage /></ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_NOTICE_EDIT} element={
+                <ProtectedRoute allowedRoles={['Admin', 0]}><AdminNoticeFormPage /></ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_NOTICE_DETAIL} element={
+                <ProtectedRoute allowedRoles={['Admin', 0]}><AdminNoticeDetailPage /></ProtectedRoute>
               } />
             </Route>
 

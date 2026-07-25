@@ -24,6 +24,7 @@ namespace SmartCollegeComplaintPortal.Data
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IComplaintRepository, ComplaintRepository>();
+            services.AddScoped<INoticeRepository, NoticeRepository>();
 
             return services;
         }
