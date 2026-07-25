@@ -116,7 +116,7 @@ For a direct test user, insert a user with an ASP.NET Identity password hash. Au
 
 ~~~sql
 INSERT INTO Users (Username, FirstName, LastName, Email, Password, Role, IsActive, CreatedAt)
-VALUES ('000001', 'System', 'Administrator', 'admin@grievancedesk.local', '<ASP.NET_IDENTITY_PASSWORD_HASH>', 0, 1, GETUTCDATE());
+VALUES ('user_000001', 'System', 'Administrator', 'admin@grievancedesk.local', '<ASP.NET_IDENTITY_PASSWORD_HASH>', 0, 1, GETUTCDATE());
 ~~~
 
 Generate the password hash through the application or ASP.NET Identity before using this sample.
@@ -179,4 +179,4 @@ Not available.
 - The API requires SQL Server and applied EF Core migrations before it can serve complaint or notice data.
 - Registration, password reset, and administrator-created accounts require a working SMTP configuration.
 - Azure Blob Storage is not required for the current local setup.
-- New and existing users use anonymous six-digit usernames; sign-in remains email-based.
+- New and existing users use unique random usernames in the user_###### format; sign-in remains email-based.

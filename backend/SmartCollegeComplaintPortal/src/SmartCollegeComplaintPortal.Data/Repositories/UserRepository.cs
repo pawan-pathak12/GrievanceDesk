@@ -4,11 +4,13 @@ using SmartCollegeComplaintPortal.Data.Database;
 using SmartCollegeComplaintPortal.Data.Interfaces;
 using SmartCollegeComplaintPortal.Domain.Commons.Pagination;
 using SmartCollegeComplaintPortal.Domain.Entities.Auths;
+using System.Security.Cryptography;
 
 namespace SmartCollegeComplaintPortal.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private const int MaximumUsernameAttempts = 50;
         private readonly SystemDbContext _dbContext;
         private readonly ILogger<UserRepository> _logger;
 
@@ -56,15 +58,11 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
 
             using var connection = _dbContext.CreateConnection();
             connection.Open();
-            using var transaction = connection.BeginTransaction();
+            using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.Serializable);
 
             try
             {
-                // Lock the sequence while assigning the next anonymous six-digit username.
-                var nextAnonymousNumber = await connection.QuerySingleAsync<int>(
-                    "SELECT ISNULL(MAX(UserId), 0) + 1 FROM Users WITH (UPDLOCK, HOLDLOCK);",
-                    transaction: transaction);
-                user.Username = nextAnonymousNumber.ToString("D6");
+                user.Username = await GenerateUniqueAnonymousUsernameAsync(connection, transaction);
 
                 var userId = await connection.QuerySingleAsync<int>(sql, user, transaction);
                 transaction.Commit();
@@ -80,6 +78,36 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 transaction.Rollback();
                 throw;
             }
+        }
+
+        private static async Task<string> GenerateUniqueAnonymousUsernameAsync(
+            System.Data.IDbConnection connection,
+            System.Data.IDbTransaction transaction)
+        {
+            const string usernameExistsSql = @"
+                SELECT CASE WHEN EXISTS
+                (
+                    SELECT 1
+                    FROM Users WITH (UPDLOCK, HOLDLOCK)
+                    WHERE Username = @Username
+                )
+                THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END;";
+
+            for (var attempt = 0; attempt < MaximumUsernameAttempts; attempt++)
+            {
+                var username = $"user_{RandomNumberGenerator.GetInt32(1_000_000):D6}";
+                var exists = await connection.QuerySingleAsync<bool>(
+                    usernameExistsSql,
+                    new { Username = username },
+                    transaction);
+
+                if (!exists)
+                {
+                    return username;
+                }
+            }
+
+            throw new InvalidOperationException("Unable to generate a unique anonymous username.");
         }
 
         public async Task<PagedResult<User>> GetAllAsync(UserQueryParams query)
