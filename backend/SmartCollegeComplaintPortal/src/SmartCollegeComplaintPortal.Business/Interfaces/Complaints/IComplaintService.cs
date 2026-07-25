@@ -8,6 +8,7 @@ namespace SmartCollegeComplaintPortal.Business.Interfaces.Complaints
         // ──── User Operations ────
         Task<Result> CreateAsync(CreateComplaintRequest request);
         Task<Result> GetMyComplaintsAsync();
+        Task<Result> GetAllForUsersAsync();
         Task<Result> GetMyComplaintByIdAsync(int complaintId);
         Task<Result> UpdateAsync(int complaintId, UpdateComplaintRequest request);
         Task<Result> DeleteAsync(int complaintId);

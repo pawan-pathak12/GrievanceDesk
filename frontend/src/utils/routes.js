@@ -7,6 +7,7 @@ export const ROUTES = {
   // User
   DASHBOARD: '/dashboard',
   MY_COMPLAINTS: '/my-complaints',
+  ALL_COMPLAINTS: '/complaints',
   NEW_COMPLAINT: '/my-complaints/new',
   COMPLAINT_DETAIL: '/my-complaints/:id',
   NOTICES: '/notices',

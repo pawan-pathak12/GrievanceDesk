@@ -42,7 +42,18 @@ namespace SmartCollegeComplaintPortal.API.Controllers
             return Ok(new ApiResponse(true, result.StatusCode, result.Data));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllComplaints()
+        {
+            var result = await _complaintService.GetAllForUsersAsync();
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
+            }
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
+        }
+
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetMyComplaintById(int id)
         {
             var result = await _complaintService.GetMyComplaintByIdAsync(id);
@@ -53,7 +64,7 @@ namespace SmartCollegeComplaintPortal.API.Controllers
             return Ok(new ApiResponse(true, result.StatusCode, result.Data));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateComplaintRequest request)
         {
             var result = await _complaintService.UpdateAsync(id, request);
@@ -64,7 +75,7 @@ namespace SmartCollegeComplaintPortal.API.Controllers
             return Ok(new ApiResponse(true, result.StatusCode, new { message = result.Message }));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _complaintService.DeleteAsync(id);

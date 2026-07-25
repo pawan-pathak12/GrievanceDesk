@@ -44,6 +44,7 @@ namespace SmartCollegeComplaintPortal.Business
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IComplaintService, ComplaintService>();
+            services.AddScoped<IComplaintCommentService, ComplaintCommentService>();
             services.AddScoped<INoticeService, NoticeService>();
 
             #endregion

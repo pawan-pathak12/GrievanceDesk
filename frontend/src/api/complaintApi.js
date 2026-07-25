@@ -5,6 +5,8 @@ export const complaintApi = {
 
   getMy: () => get('/api/complaints/my'),
 
+  getAll: () => get('/api/complaints/all'),
+
   getById: (id) => get(`/api/complaints/${id}`),
 
   update: (id, data) => put(`/api/complaints/${id}`, data),

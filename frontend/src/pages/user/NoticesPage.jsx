@@ -66,10 +66,13 @@ export default function NoticesPage() {
         <div className="notice-list-grid">
           {visibleNotices.map((notice) => (
             <article className="notice-list-card" key={notice.id}>
-              <div className="notice-card-header"><NoticePriorityBadge priority={notice.priority} /><span>{formatDateTime(notice.publishedAt)}</span></div>
+              <div className="notice-card-header">
+                <NoticePriorityBadge priority={notice.priority} />
+                <TableActionButton label="View notice" icon={Eye} onClick={() => navigate(ROUTES.NOTICE_DETAIL.replace(':id', notice.id))} />
+              </div>
               <h2>{notice.title}</h2>
               <p>{getPreview(notice.content)}</p>
-              <TableActionButton label="View notice" icon={Eye} onClick={() => navigate(ROUTES.NOTICE_DETAIL.replace(':id', notice.id))} />
+              <div className="notice-card-footer"><span>{formatDateTime(notice.publishedAt)}</span></div>
             </article>
           ))}
         </div>

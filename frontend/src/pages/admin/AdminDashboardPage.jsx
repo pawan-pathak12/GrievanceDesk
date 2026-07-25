@@ -7,16 +7,18 @@ import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import ComplaintStatusPieChart from '../../components/common/ComplaintStatusPieChart';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ComplaintDiscussionModal from '../../components/common/ComplaintDiscussionModal';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 import { formatDate, formatTime } from '../../utils/enums';
-import { Eye } from 'lucide-react';
+import { Eye, MessageSquare } from 'lucide-react';
 import TableActionButton from '../../components/common/TableActionButton';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [discussionComplaint, setDiscussionComplaint] = useState(null);
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -96,7 +98,10 @@ export default function AdminDashboardPage() {
                     <td>{formatDate(c.createdAt)}</td>
                     <td>{formatTime(c.createdAt)}</td>
                     <td>
-                      <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))} />
+                      <div className="table-icon-actions">
+                        <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))} />
+                        <TableActionButton label="Open discussion" icon={MessageSquare} onClick={() => setDiscussionComplaint(c)} />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -105,6 +110,8 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      {discussionComplaint && <ComplaintDiscussionModal complaint={discussionComplaint} isAdmin onClose={() => setDiscussionComplaint(null)} />}
     </div>
   );
 }

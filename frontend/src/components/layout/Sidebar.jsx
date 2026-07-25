@@ -103,6 +103,18 @@ export default function Sidebar() {
           {!isAdmin && (
             <li>
               <NavLink
+                to={ROUTES.ALL_COMPLAINTS}
+                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              >
+                <span className="nav-icon">AC</span>
+                All Complaints
+              </NavLink>
+            </li>
+          )}
+
+          {!isAdmin && (
+            <li>
+              <NavLink
                 to={ROUTES.NOTICES}
                 className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               >

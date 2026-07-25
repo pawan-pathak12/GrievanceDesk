@@ -22,11 +22,6 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
 
         public async Task<int> AddAsync(User user)
         {
-            if (string.IsNullOrWhiteSpace(user.Username))
-            {
-                user.Username = "TEMP_" + Guid.NewGuid().ToString("N")[..8];
-            }
-
             const string sql = @"
                 INSERT INTO Users
                 (
@@ -60,23 +55,31 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                 : user.CreatedAt;
 
             using var connection = _dbContext.CreateConnection();
+            connection.Open();
+            using var transaction = connection.BeginTransaction();
 
-            var userId = await connection.QuerySingleAsync<int>(sql, user);
-
-            if (user.Username.StartsWith("TEMP_"))
+            try
             {
-                var finalUsername = $"User_{1000 + userId}";
-                await connection.ExecuteAsync(
-                    "UPDATE Users SET Username = @Username WHERE UserId = @UserId;",
-                    new { Username = finalUsername, UserId = userId });
-                user.Username = finalUsername;
+                // Lock the sequence while assigning the next anonymous six-digit username.
+                var nextAnonymousNumber = await connection.QuerySingleAsync<int>(
+                    "SELECT ISNULL(MAX(UserId), 0) + 1 FROM Users WITH (UPDLOCK, HOLDLOCK);",
+                    transaction: transaction);
+                user.Username = nextAnonymousNumber.ToString("D6");
+
+                var userId = await connection.QuerySingleAsync<int>(sql, user, transaction);
+                transaction.Commit();
+
+                _logger.LogInformation(
+                    "New user created with Id {UserId} and anonymous Username {Username}",
+                    userId, user.Username);
+
+                return userId;
             }
-
-            _logger.LogInformation(
-                "New user created with Id {UserId} and Username {Username}",
-                userId, user.Username);
-
-            return userId;
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public async Task<PagedResult<User>> GetAllAsync(UserQueryParams query)
