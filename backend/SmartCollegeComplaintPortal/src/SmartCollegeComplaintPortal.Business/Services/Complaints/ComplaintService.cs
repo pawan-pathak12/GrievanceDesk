@@ -110,6 +110,14 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
             return Result.Success(response);
         }
 
+        public async Task<Result> GetAllForUsersAsync()
+        {
+            var complaints = await _complaintRepository.GetAllAsync(null, null, null);
+            var response = _mapper.Map<List<ComplaintSummaryResponse>>(complaints);
+
+            return Result.Success(response);
+        }
+
         public async Task<Result> GetMyComplaintByIdAsync(int complaintId)
         {
             var userId = _currentUserService.GetUserId();

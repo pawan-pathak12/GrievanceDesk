@@ -18,6 +18,7 @@ import LandingPage from './pages/LandingPage';
 // User pages
 import DashboardPage from './pages/user/DashboardPage';
 import MyComplaintsPage from './pages/user/MyComplaintsPage';
+import AllComplaintsPage from './pages/user/AllComplaintsPage';
 import NewComplaintPage from './pages/user/NewComplaintPage';
 import ComplaintDetailPage from './pages/user/ComplaintDetailPage';
 import NoticesPage from './pages/user/NoticesPage';
@@ -61,6 +62,7 @@ export default function App() {
               {/* User routes */}
               <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
               <Route path={ROUTES.MY_COMPLAINTS} element={<MyComplaintsPage />} />
+              <Route path={ROUTES.ALL_COMPLAINTS} element={<AllComplaintsPage />} />
               <Route path={ROUTES.NEW_COMPLAINT} element={<NewComplaintPage />} />
               <Route path={ROUTES.COMPLAINT_DETAIL} element={<ComplaintDetailPage />} />
               <Route path={ROUTES.NOTICES} element={<NoticesPage />} />

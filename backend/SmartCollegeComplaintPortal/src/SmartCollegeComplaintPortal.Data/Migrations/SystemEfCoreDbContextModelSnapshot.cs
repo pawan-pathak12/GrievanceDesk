@@ -296,6 +296,52 @@ namespace SmartCollegeComplaintPortal.Data.Migrations
                     b.ToTable("ComplaintUpdates");
                 });
 
+            modelBuilder.Entity("SmartCollegeComplaintPortal.Domain.Entities.Complaints.ComplaintComment", b =>
+                {
+                    b.Property<int>("ComplaintCommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComplaintCommentId"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("ComplaintId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsEdited")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ComplaintCommentId");
+
+                    b.HasIndex("ComplaintId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ComplaintComments");
+                });
+
             modelBuilder.Entity("SmartCollegeComplaintPortal.Domain.Entities.Members.Member", b =>
                 {
                     b.Property<int>("MemberId")
@@ -439,6 +485,21 @@ namespace SmartCollegeComplaintPortal.Data.Migrations
                     b.HasOne("SmartCollegeComplaintPortal.Domain.Entities.Auths.User", null)
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SmartCollegeComplaintPortal.Domain.Entities.Complaints.ComplaintComment", b =>
+                {
+                    b.HasOne("SmartCollegeComplaintPortal.Domain.Entities.Complaints.Complaint", null)
+                        .WithMany()
+                        .HasForeignKey("ComplaintId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartCollegeComplaintPortal.Domain.Entities.Auths.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

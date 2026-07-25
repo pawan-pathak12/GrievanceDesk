@@ -4,6 +4,7 @@ import { adminApi } from '../../api/adminApi';
 import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ComplaintDiscussion from '../../components/common/ComplaintDiscussion';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 import { ComplaintStatus, formatDateTime, formatStatus, normalizeStatus } from '../../utils/enums';
@@ -289,6 +290,8 @@ export default function AdminComplaintDetailPage() {
           </div>
         </form>
       </section>
+
+      <ComplaintDiscussion complaintId={id} isAdmin />
 
       <section className="detail-card complaint-timeline-card" aria-labelledby="activity-timeline-title">
         <div className="timeline-heading">

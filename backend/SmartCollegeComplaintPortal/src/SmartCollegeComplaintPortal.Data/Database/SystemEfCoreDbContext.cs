@@ -21,6 +21,7 @@ namespace SmartCollegeComplaintPortal.Data.Database
         public DbSet<Member> Members { get; set; }
         public DbSet<Complaint> Complaints { get; set; }
         public DbSet<ComplaintUpdate> ComplaintUpdates { get; set; }
+        public DbSet<ComplaintComment> ComplaintComments { get; set; }
         public DbSet<Notice> Notices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -88,6 +89,29 @@ namespace SmartCollegeComplaintPortal.Data.Database
                 entity.HasOne<User>()
                     .WithMany()
                     .HasForeignKey(e => e.UpdatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ComplaintComment>(entity =>
+            {
+                entity.HasKey(e => e.ComplaintCommentId);
+                entity.Property(e => e.Comment).IsRequired().HasMaxLength(1000);
+                entity.Property(e => e.IsEdited).HasDefaultValue(false);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasQueryFilter(e => e.IsActive);
+
+                entity.HasIndex(e => e.ComplaintId);
+                entity.HasIndex(e => e.UserId);
+
+                entity.HasOne<Complaint>()
+                    .WithMany()
+                    .HasForeignKey(e => e.ComplaintId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

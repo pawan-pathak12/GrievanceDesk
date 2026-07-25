@@ -4,6 +4,7 @@ import { complaintApi } from '../../api/complaintApi';
 import StatusBadge from '../../components/common/StatusBadge';
 import CategoryBadge from '../../components/common/CategoryBadge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ComplaintDiscussion from '../../components/common/ComplaintDiscussion';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
 import { formatDateTime, formatStatus } from '../../utils/enums';
@@ -64,6 +65,8 @@ export default function ComplaintDetailPage() {
           <p>{complaint.description}</p>
         </div>
       </div>
+
+      <ComplaintDiscussion complaintId={id} />
 
       <div className="detail-card">
         <h2>Activity Timeline</h2>
