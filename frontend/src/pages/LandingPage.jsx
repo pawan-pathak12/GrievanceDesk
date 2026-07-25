@@ -1,22 +1,23 @@
+import { ArrowRight, BellRing, ClipboardCheck, MessageSquareText, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/routes';
 import '../Styles/landing.css';
 
-const highlights = [
+const workflow = [
   {
-    number: '01',
-    title: 'Submit clearly',
-    text: 'Share the issue, category, and context your organization needs to act on it.',
+    icon: ClipboardCheck,
+    title: 'Report with context',
+    text: 'Members submit categorized complaints with the details administrators need to begin work.',
   },
   {
-    number: '02',
-    title: 'Follow every update',
-    text: 'See your complaint move from review to resolution with a clear activity trail.',
+    icon: MessageSquareText,
+    title: 'Keep the conversation clear',
+    text: 'A shared discussion and activity history keep every update connected to the complaint.',
   },
   {
-    number: '03',
-    title: 'Resolve together',
-    text: 'Give administrators the tools to review, prioritize, and close the loop.',
+    icon: BellRing,
+    title: 'Close the loop',
+    text: 'Track each complaint through review and resolution while keeping members informed.',
   },
 ];
 
@@ -25,7 +26,7 @@ export default function LandingPage() {
     <main className="landing-page">
       <section className="landing-hero">
         <nav className="landing-nav" aria-label="Primary navigation">
-          <Link className="landing-brand" to="/">
+          <Link className="landing-brand" to="/" aria-label="GrievanceDesk home">
             <span className="landing-brand-mark">GD</span>
             <span>GrievanceDesk</span>
           </Link>
@@ -37,52 +38,71 @@ export default function LandingPage() {
         </nav>
 
         <div className="landing-hero-content">
-          <p className="landing-eyebrow">Organization operations, made accountable</p>
-          <h1>Make every concern easier to hear and resolve.</h1>
+          <p className="landing-eyebrow">Complaint management for organizations</p>
+          <h1>GrievanceDesk</h1>
+          <p className="landing-hero-statement">A clear, accountable path from concern to resolution.</p>
           <p className="landing-hero-copy">
-            GrievanceDesk gives members a simple way to report issues and gives administrators
-            one reliable workspace to respond with clarity.
+            Give members a secure place to report issues and give your team one focused workspace
+            to review, discuss, and resolve them.
           </p>
           <div className="landing-hero-actions">
-            <Link className="landing-primary-button" to={ROUTES.REGISTER_EMAIL}>Get started</Link>
+            <Link className="landing-primary-button" to={ROUTES.REGISTER_EMAIL}>
+              Get started <ArrowRight size={17} aria-hidden="true" />
+            </Link>
             <Link className="landing-secondary-button" to={ROUTES.LOGIN}>Sign in to workspace</Link>
           </div>
         </div>
 
-        <div className="landing-hero-footer">
-          <span>Built for transparent organization operations</span>
-          <span>Secure member access</span>
-          <span>Trackable resolutions</span>
+        <div className="landing-hero-footer" aria-label="Platform highlights">
+          <span><ShieldCheck size={16} aria-hidden="true" /> Secure member access</span>
+          <span><ClipboardCheck size={16} aria-hidden="true" /> Trackable resolution workflow</span>
+          <span><MessageSquareText size={16} aria-hidden="true" /> Shared discussion history</span>
         </div>
       </section>
 
-      <section className="landing-intro">
-        <div className="landing-section-heading">
-          <p className="landing-eyebrow">One shared record</p>
-          <h2>From first report to final resolution.</h2>
+      <section className="landing-intro" aria-labelledby="landing-intro-title">
+        <div>
+          <p className="landing-section-label">One reliable record</p>
+          <h2 id="landing-intro-title">Keep reporting, communication, and action in one place.</h2>
         </div>
         <p>
-          Replace scattered messages and uncertain follow-ups with a focused workflow that keeps
-          members informed and teams aligned.
+          GrievanceDesk replaces scattered follow-ups with a simple workflow that gives members
+          visibility and gives administrators the context to respond with confidence.
         </p>
       </section>
 
-      <section className="landing-highlights" aria-label="How GrievanceDesk works">
-        {highlights.map((highlight) => (
-          <article className="landing-highlight" key={highlight.number}>
-            <span className="landing-highlight-number">{highlight.number}</span>
-            <h3>{highlight.title}</h3>
-            <p>{highlight.text}</p>
+      <section className="landing-workflow" aria-label="GrievanceDesk workflow">
+        {workflow.map(({ icon: Icon, title, text }, index) => (
+          <article className="landing-workflow-item" key={title}>
+            <div className="landing-workflow-icon"><Icon size={21} aria-hidden="true" /></div>
+            <span className="landing-workflow-number">0{index + 1}</span>
+            <h3>{title}</h3>
+            <p>{text}</p>
           </article>
         ))}
       </section>
 
-      <section className="landing-final-cta">
-        <div>
-          <p className="landing-eyebrow">Start with a clearer conversation</p>
-          <h2>Your next report deserves a visible path forward.</h2>
+      <section className="landing-capabilities" aria-labelledby="landing-capabilities-title">
+        <div className="landing-capabilities-heading">
+          <p className="landing-section-label">Built for accountable operations</p>
+          <h2 id="landing-capabilities-title">Everything needed to keep a complaint moving.</h2>
         </div>
-        <Link className="landing-primary-button" to={ROUTES.REGISTER_EMAIL}>Create your account</Link>
+        <ul className="landing-capability-list">
+          <li><ShieldCheck size={18} aria-hidden="true" /> Role-based member and administrator workspaces</li>
+          <li><ClipboardCheck size={18} aria-hidden="true" /> Status tracking, activity history, and resolution notes</li>
+          <li><MessageSquareText size={18} aria-hidden="true" /> Complaint discussions with clear ownership and moderation</li>
+          <li><BellRing size={18} aria-hidden="true" /> Organization notices for timely updates</li>
+        </ul>
+      </section>
+
+      <section className="landing-final-cta" aria-labelledby="landing-cta-title">
+        <div>
+          <p className="landing-section-label">Start today</p>
+          <h2 id="landing-cta-title">Give every concern a visible path forward.</h2>
+        </div>
+        <Link className="landing-primary-button landing-final-button" to={ROUTES.REGISTER_EMAIL}>
+          Create an account <ArrowRight size={17} aria-hidden="true" />
+        </Link>
       </section>
 
       <footer className="landing-footer">
