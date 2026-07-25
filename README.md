@@ -1,156 +1,255 @@
-# GrievanceDesk
+# 🚀 GrievanceDesk
 
-GrievanceDesk is an organization-agnostic complaint management system for submitting, tracking, and resolving internal grievances. It supports separate user and administrator workflows and is intended for private organizations; government-specific workflows are not included.
-
----
-
-# Features
-
-- Secure registration, login, OTP verification, password reset, and JWT authentication.
-- Complaint submission, status tracking, and activity history for users.
-- Admin dashboard, filtering, status distribution, and complaint lifecycle management.
-- Controlled complaint updates with status rules, resolution notes, duplicate handling, and final-state locks.
-- SMTP-based OTP emails and configured Azure Blob Storage support.
+> **GrievanceDesk** is a centralized organization portal that simplifies communication between organizations and their members. It provides secure member onboarding, organization-wide notices, grievance management, and administrative tools through a single, easy-to-use platform.
 
 ---
 
-# Project Structure
+# ✨ Core Modules
 
-- `frontend/` - React and Vite single-page application.
-- `backend/SmartCollegeComplaintPortal/` - .NET solution containing API, business, data, and domain projects.
-- `backend/SmartCollegeComplaintPortal/src/SmartCollegeComplaintPortal.Data/Migrations/` - Entity Framework Core SQL Server migrations.
-- `ui_images/` - UI reference images.
+## 👤 Member Portal
 
----
-
-# Tech Stack
-
-## Frontend
-
-- React 19
-- Vite 8
-- React Router
-- Oxlint
-
-## Backend
-
-- ASP.NET Core Web API on .NET 9
-- Entity Framework Core and Dapper
-- JWT Bearer authentication
-- AutoMapper, Serilog, Swagger/OpenAPI
-- SMTP email and Azure Blob Storage SDK
-
-## Database
-
-- Microsoft SQL Server
+- Secure Registration
+- Login
+- Email OTP Verification
+- Forgot Password
+- Profile Management
 
 ---
 
-# Requirements
+## 📢 Notice Management
 
-- Node.js (version not specified in the repository)
-- .NET SDK 9.0.315 or a compatible 9.0 SDK
-- SQL Server Express, Developer Edition, or another reachable SQL Server instance
+### Member
+
+- View Published Notices
+- Read Notice Details
+
+### Admin
+
+- Create Notices
+- Edit Notices
+- Publish / Unpublish Notices
+- Soft Delete Notices
+
+---
+
+## 📝 Grievance Management
+
+### Member
+
+- Submit Grievances
+- View My Grievances
+- View Grievance Details
+- Track Grievance Status
+- View Activity History
+
+### Admin
+
+- View All Grievances
+- Update Grievance Status
+- Add Resolution Notes
+- Mark as Duplicate
+- Mark as Irrelevant
+- View Complaint Analytics
+- View Complaint Timeline
+
+---
+
+## ⚙️ Platform Features
+
+- JWT Authentication
+- Role-Based Authorization
+- Email OTP Verification
+- Password Reset
+- SMTP Email Notifications
+- Structured API Responses
+- Rate Limiting
+- Serilog Logging
+- Entity Framework Core Migrations
+
+---
+
+# 🛠 Tech Stack
+
+| Frontend | Backend | Database |
+|----------|----------|----------|
+| React 19 | ASP.NET Core (.NET 9) | SQL Server |
+| Vite | Dapper | Entity Framework Core |
+| React Router | AutoMapper | EF Core Migrations |
+| Axios | JWT Authentication | |
+
+---
+
+# 📋 Prerequisites
+
+Install the following before running the project.
+
+- .NET SDK 9
+- Node.js (LTS)
+- SQL Server Express or SQL Server Developer Edition
 - Git
 
 ---
 
-# Environment Variables
+# ⚙️ Backend Setup
 
-## Frontend
-
-- `VITE_API_URL` - Optional API base URL for deployed builds. Local development uses the Vite `/api` proxy and needs no frontend environment variable.
-
-## Backend
-
-Configure these with .NET User Secrets for local development or environment variables for deployment. Use double underscores in environment-variable names, for example `ConnectionStrings__DefaultConnection`.
-
-- `ConnectionStrings__DefaultConnection` - SQL Server connection string.
-- `Jwt__Key` - Signing key for JWT and verification tokens.
-- `Jwt__Issuer` - JWT issuer.
-- `Jwt__Audience` - JWT audience.
-- `Jwt__ExpiresInMinutes` - Access-token lifetime in minutes.
-- `EmailSettings__SmtpServer` - SMTP host.
-- `EmailSettings__Port` - SMTP port.
-- `EmailSettings__SenderName` - Sender display name.
-- `EmailSettings__SenderEmail` - SMTP sender address.
-- `EmailSettings__SenderPassword` - SMTP password or app password.
-- `AzureBlobStorage__ConnectionString` - Azure Storage connection string when Blob Storage is used.
-- `AzureBlobStorage__ContainerName` - Azure Blob container name when Blob Storage is used.
-- `Swagger__Key`, `Swagger__Username`, `Swagger__Password` - Required when Swagger is protected outside Development.
-- `AllowedOrigins__0`, `AllowedOrigins__1`, etc. - Optional deployed frontend origins for CORS.
-
----
-
-# Database Setup
-
-1. Install and start SQL Server.
-2. Configure `ConnectionStrings__DefaultConnection`.
-3. From `backend/SmartCollegeComplaintPortal`, apply the included migrations:
-
-```powershell
-dotnet ef database update --project src/SmartCollegeComplaintPortal.Data --startup-project src/SmartCollegeComplaintPortal.API
-```
-
-No seed data is configured in the repository.
-
----
-
-# Installation
+## 1. Clone Repository
 
 ```powershell
 git clone <repository-url>
 cd <repository-folder>
-
-npm ci --prefix frontend
-dotnet restore backend/SmartCollegeComplaintPortal/SmartCollegeComplaintPortal.sln
 ```
-
-Configure the backend secrets or environment variables listed above before starting the API.
 
 ---
 
-# Running Locally
-
-1. Ensure SQL Server Express, SQL Server Developer Edition, or another SQL Server instance is running.
-2. Configure the database, JWT, SMTP, and any required Blob Storage settings.
-3. Apply migrations from `backend/SmartCollegeComplaintPortal`.
-4. Start the API:
+## 2. Restore Packages
 
 ```powershell
-cd backend/SmartCollegeComplaintPortal
-dotnet run --project src/SmartCollegeComplaintPortal.API
+cd backend
+
+dotnet restore
 ```
 
-The development API is configured for `https://localhost:7025` and `https://localhost:5259`.
+---
 
-5. In another terminal, start the frontend:
+## 3. Configure User Secrets
+
+Initialize User Secrets
+
+```powershell
+dotnet user-secrets init
+```
+
+Configure required secrets
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.\SQLEXPRESS;Database=GrievanceDeskDb;Trusted_Connection=True;TrustServerCertificate=True"
+
+dotnet user-secrets set "Jwt:Key" "YOUR_16_CHARACTER_SECRET_KEY"
+
+dotnet user-secrets set "Swagger:Key" "YOUR_16_CHARACTER_SECRET_KEY"
+
+dotnet user-secrets set "Swagger:Username" "admin"
+
+dotnet user-secrets set "Swagger:Password" "admin123"
+
+dotnet user-secrets set "EmailSettings:SenderPassword" "YOUR_GMAIL_APP_PASSWORD"
+```
+
+> **Important**
+>
+> - JWT and Swagger secret keys should contain **at least 16 characters**.
+> - Enable **Google 2-Step Verification** before generating an App Password.
+> - Use the generated **Google App Password** as `EmailSettings:SenderPassword`.
+
+---
+
+## 4. Database Setup
+
+Apply Entity Framework Core migrations.
+
+```powershell
+dotnet ef database update
+```
+
+---
+
+## 5. Run Backend
+
+```powershell
+dotnet run
+```
+
+Backend URL
+
+```
+https://localhost:7025
+```
+
+---
+
+# 💻 Frontend Setup
+
+## 1. Install Dependencies
 
 ```powershell
 cd frontend
+
+npm install
+```
+
+---
+
+## 2. Configure Environment
+
+Create a `.env` file inside the frontend directory.
+
+```env
+VITE_API_URL=https://localhost:7025/api
+```
+
+---
+
+## 3. Run Frontend
+
+```powershell
 npm run dev
 ```
 
-Vite serves the frontend on its local development URL and proxies `/api` requests to `https://localhost:7025`.
+Frontend URL
+
+```
+http://localhost:5173
+```
 
 ---
 
-# Deployment
+# 🔑 Demo Data
 
-The repository includes a GitHub Actions workflow for the backend. Pushes to `main` build and publish the API to Azure App Service when `AZURE_WEBAPP_NAME` and `AZURE_WEBAPP_PUBLISH_PROFILE` are configured as GitHub secrets.
+To test the application quickly, insert an administrator account directly into the database.
 
-No deployed frontend configuration or public deployment URL is available in the repository.
+Example:
+
+```sql
+INSERT INTO Users
+(
+    Username,
+    FirstName,
+    LastName,
+    Email,
+    Password,
+    Role,
+    IsActive,
+    CreatedAt
+)
+VALUES
+(
+    'Admin',
+    'System',
+    'Administrator',
+    'admin@grievancedesk.com',
+    '<PASSWORD_HASH>',
+    0,
+    1,
+    GETUTCDATE()
+);
+```
+
+Replace `<PASSWORD_HASH>` with an ASP.NET Identity password hash for your desired password.
 
 ---
 
-# Demo Credentials
+# 📝 Notes
 
-Not available.
+- SQL Server Express or SQL Server Developer Edition is required.
+- Configure the database connection string before running the backend.
+- SMTP configuration is required for registration OTPs and password reset emails.
+- Enable **Google 2-Step Verification** and generate a **Google App Password** for SMTP authentication.
+- JWT and Swagger secret keys should contain at least **16 characters**.
+- Entity Framework Core migrations must be applied before starting the application.
 
 ---
 
-# Notes
+# 📄 License
 
-- SMTP configuration is required for registration OTPs and password-reset OTPs.
-- Azure Blob Storage is registered in the backend; configure it when using file storage features.
-- The production API applies pending EF Core migrations on startup.
+Developed for educational and hackathon purposes.
+```
