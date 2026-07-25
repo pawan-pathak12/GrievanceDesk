@@ -15,4 +15,6 @@ export const adminApi = {
   getById: (id) => get(`/api/admin/complaints/${id}`),
 
   updateComplaint: (id, data) => put(`/api/admin/complaints/${id}`, data),
+
+  markIrrelevant: (id, reason) => put(`/api/admin/complaints/${id}/irrelevant`, { reason }),
 };

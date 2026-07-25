@@ -9,6 +9,7 @@ namespace SmartCollegeComplaintPortal.Data.QueryResult
         public int? OldStatus { get; set; }
         public int? NewStatus { get; set; }
         public string? NoteText { get; set; }
+        public string? UpdatedByName { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

@@ -7,6 +7,7 @@ namespace SmartCollegeComplaintPortal.Business.DTOs.Complaints
         public string? OldStatus { get; set; }
         public string? NewStatus { get; set; }
         public string? NoteText { get; set; }
+        public string? UpdatedByName { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

@@ -496,6 +496,129 @@
   border-top: 1px solid var(--border-light);
 }
 
+.complaint-detail-page {
+  display: grid;
+  gap: 16px;
+}
+
+.complaint-detail-page .back-link,
+.complaint-detail-page .detail-card {
+  margin-bottom: 0;
+}
+
+.complaint-details-card {
+  padding: 20px 24px 22px;
+}
+
+.complaint-details-card .detail-heading {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.complaint-details-card .detail-heading h1 {
+  font-size: 1.3rem;
+}
+
+.btn-irrelevant-action {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.btn-irrelevant-action:hover {
+  border-color: var(--error);
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.complaint-readonly-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.complaint-readonly-item {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-height: 82px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--border-light);
+  background: #ffffff;
+}
+
+.complaint-readonly-item:last-child {
+  border-right: 0;
+}
+
+.complaint-readonly-item dt,
+.complaint-summary-grid dt {
+  color: var(--text-gray);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.complaint-readonly-item dd,
+.complaint-summary-grid dd {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.complaint-readonly-title {
+  grid-column: span 2;
+}
+
+.complaint-readonly-description {
+  grid-column: 1 / -1;
+  min-height: 0;
+  border-top: 1px solid var(--border-light);
+  border-right: 0;
+}
+
+.complaint-readonly-description dd {
+  color: var(--text-body);
+  font-weight: 500;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.complaint-summary-card {
+  padding: 20px 24px;
+}
+
+.complaint-summary-card h2,
+.timeline-heading h2 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 1.08rem;
+}
+
+.complaint-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.complaint-summary-grid > div {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: #f8fafc;
+}
+
+.complaint-summary-grid dd {
+  line-height: 1.35;
+}
+
 .complaint-update-card {
   padding: 0;
   overflow: hidden;
@@ -523,6 +646,8 @@
 }
 
 .complaint-finalized-message {
+  display: grid;
+  gap: 3px;
   margin: 20px 24px 0;
   padding: 12px 14px;
   border: 1px solid var(--warning);
@@ -605,6 +730,138 @@
   display: flex;
   justify-content: flex-end;
   padding-top: 4px;
+}
+
+.complaint-timeline-card {
+  padding: 20px 24px 24px;
+}
+
+.timeline-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.timeline-heading p {
+  margin: 4px 0 0;
+  color: var(--text-gray);
+  font-size: 0.82rem;
+}
+
+.timeline-item {
+  box-shadow: none;
+}
+
+.timeline-item-actor {
+  margin-top: 8px;
+  color: var(--text-gray);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.complaint-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(4px);
+}
+
+.complaint-irrelevant-dialog {
+  width: min(100%, 480px);
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.complaint-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.complaint-dialog-heading h2 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+}
+
+.complaint-irrelevant-dialog > p {
+  margin: -8px 0 0;
+  color: var(--text-gray);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.complaint-irrelevant-dialog textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #f8fafc;
+  color: var(--text-dark);
+  resize: vertical;
+}
+
+.complaint-irrelevant-dialog textarea:focus {
+  outline: 3px solid var(--primary-soft);
+  border-color: var(--primary);
+  background: #ffffff;
+}
+
+.dialog-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-gray);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.dialog-close:hover,
+.dialog-close:focus-visible {
+  background: var(--border-light);
+  color: var(--text-dark);
+}
+
+.complaint-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-danger {
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 1px solid var(--error);
+  border-radius: var(--radius);
+  background: var(--error);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.btn-danger:hover {
+  filter: brightness(0.95);
+}
+
+.btn-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .timeline {
@@ -938,6 +1195,26 @@
     width: 100%;
   }
 
+  .complaint-readonly-grid,
+  .complaint-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .complaint-readonly-item,
+  .complaint-readonly-item:last-child {
+    border-right: 1px solid var(--border-light);
+  }
+
+  .complaint-readonly-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .complaint-readonly-title,
+  .complaint-readonly-description {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+
   .form-footer {
     display: grid;
   }
@@ -949,5 +1226,39 @@
 
   .status-chart-visual {
     width: min(100%, 230px);
+  }
+}
+
+@media (max-width: 480px) {
+  .complaint-details-card,
+  .complaint-summary-card,
+  .complaint-timeline-card {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .complaint-readonly-grid,
+  .complaint-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .complaint-readonly-item,
+  .complaint-readonly-item:nth-child(2n) {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .complaint-readonly-item:last-child {
+    border-bottom: 0;
+  }
+
+  .complaint-details-card .detail-heading,
+  .complaint-dialog-footer {
+    display: grid;
+  }
+
+  .btn-irrelevant-action,
+  .complaint-dialog-footer button {
+    width: 100%;
   }
 }

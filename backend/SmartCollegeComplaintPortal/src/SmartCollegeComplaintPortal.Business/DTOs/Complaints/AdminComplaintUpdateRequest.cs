@@ -13,9 +13,5 @@ namespace SmartCollegeComplaintPortal.Business.DTOs.Complaints
 
         public bool IsDuplicate { get; set; }
 
-        public bool IsIrrelevant { get; set; }
-
-        [StringLength(2000, ErrorMessage = "Irrelevant reason cannot exceed 2000 characters.")]
-        public string? IrrelevantReason { get; set; }
     }
 }

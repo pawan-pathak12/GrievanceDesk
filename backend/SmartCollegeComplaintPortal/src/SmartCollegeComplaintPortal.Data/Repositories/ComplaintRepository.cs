@@ -580,8 +580,10 @@ namespace SmartCollegeComplaintPortal.Data.Repositories
                     cu.OldStatus,
                     cu.NewStatus,
                     cu.NoteText,
+                    COALESCE(NULLIF(LTRIM(RTRIM(CONCAT(u.FirstName, ' ', u.LastName))), ''), NULLIF(u.Username, ''), 'System') AS UpdatedByName,
                     cu.CreatedAt
                 FROM ComplaintUpdates cu
+                LEFT JOIN Users u ON u.UserId = cu.UpdatedByUserId
                 WHERE cu.ComplaintId = @ComplaintId
                 ORDER BY cu.CreatedAt ASC;";
 

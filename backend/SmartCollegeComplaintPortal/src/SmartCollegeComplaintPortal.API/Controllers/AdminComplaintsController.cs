@@ -63,5 +63,17 @@ namespace SmartCollegeComplaintPortal.API.Controllers
             }
             return Ok(new ApiResponse(true, result.StatusCode, result.Data));
         }
+
+        [HttpPut("{id}/irrelevant")]
+        public async Task<IActionResult> MarkIrrelevant(int id, [FromBody] MarkIrrelevantRequest request)
+        {
+            var result = await _complaintService.MarkComplaintIrrelevantAsync(id, request);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, new ErrorResponse(false, result.StatusCode, null, result.Errors));
+            }
+
+            return Ok(new ApiResponse(true, result.StatusCode, result.Data));
+        }
     }
 }

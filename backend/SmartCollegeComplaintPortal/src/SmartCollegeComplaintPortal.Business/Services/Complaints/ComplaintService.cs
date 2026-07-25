@@ -327,39 +327,28 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
                 return Result.Failure("This complaint has been finalized and can no longer be modified.");
             }
 
-            if (request.IsDuplicate && request.IsIrrelevant)
+            var targetStatus = request.Status;
+            if (targetStatus == ComplaintStatus.Irrelevant)
             {
-                return Result.Failure("A complaint cannot be marked as both duplicate and irrelevant.");
+                return Result.Failure("Use the separate irrelevant action to finalize a complaint as irrelevant.");
             }
 
-            var targetStatus = request.IsIrrelevant ? ComplaintStatus.Irrelevant : request.Status;
-            if (!request.IsIrrelevant && targetStatus == ComplaintStatus.Irrelevant)
-            {
-                return Result.Failure("Use the irrelevant option and provide a reason to mark a complaint irrelevant.");
-            }
-
-            if (!request.IsIrrelevant && !IsAllowedStatusTransition(currentStatus, targetStatus))
+            if (!IsAllowedStatusTransition(currentStatus, targetStatus))
             {
                 return Result.Failure($"A complaint in {currentStatus} status cannot be changed to {targetStatus}.");
             }
 
             var note = request.Note?.Trim();
-            var irrelevantReason = request.IrrelevantReason?.Trim();
 
             if (targetStatus == ComplaintStatus.Resolved && string.IsNullOrWhiteSpace(note))
             {
                 return Result.Failure("A resolution note is required before resolving a complaint.");
             }
 
-            if (request.IsIrrelevant && string.IsNullOrWhiteSpace(irrelevantReason))
-            {
-                return Result.Failure("An irrelevant reason is required when marking a complaint irrelevant.");
-            }
-
             var updates = new List<ComplaintUpdate>();
             var now = DateTime.UtcNow;
 
-            if (targetStatus != currentStatus && !request.IsIrrelevant)
+            if (targetStatus != currentStatus)
             {
                 updates.Add(new ComplaintUpdate
                 {
@@ -395,20 +384,6 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
                 });
             }
 
-            if (request.IsIrrelevant)
-            {
-                updates.Add(new ComplaintUpdate
-                {
-                    ComplaintId = complaintId,
-                    UpdatedByUserId = userId.Value,
-                    UpdateType = ComplaintUpdateType.MarkedIrrelevant,
-                    OldStatus = currentStatus,
-                    NewStatus = ComplaintStatus.Irrelevant,
-                    NoteText = irrelevantReason,
-                    CreatedAt = now
-                });
-            }
-
             if (updates.Count == 0)
             {
                 return Result.Failure("Select a new status, add a note, or mark the complaint before updating.");
@@ -430,6 +405,58 @@ namespace SmartCollegeComplaintPortal.Business.Services.Complaints
             }
 
             _logger.LogInformation("Admin updated complaint {ComplaintId} with {UpdateCount} actions", complaintId, updates.Count);
+
+            return await GetComplaintByIdAsync(complaintId);
+        }
+
+        public async Task<Result> MarkComplaintIrrelevantAsync(int complaintId, MarkIrrelevantRequest request)
+        {
+            var userId = _currentUserService.GetUserId();
+            if (userId == null)
+            {
+                return Result.Unauthorized("User could not be identified.");
+            }
+
+            var complaint = await _complaintRepository.GetByIdAsync(complaintId);
+            if (complaint == null)
+            {
+                return Result.NotFound($"Complaint with ID {complaintId} not found.");
+            }
+
+            var currentStatus = (ComplaintStatus)complaint.Status;
+            if (IsLockedComplaint(currentStatus, complaint.IsDuplicate))
+            {
+                return Result.Failure("This complaint has been finalized and can no longer be modified.");
+            }
+
+            var reason = request.Reason.Trim();
+            var now = DateTime.UtcNow;
+            var updates = new List<ComplaintUpdate>
+            {
+                new()
+                {
+                    ComplaintId = complaintId,
+                    UpdatedByUserId = userId.Value,
+                    UpdateType = ComplaintUpdateType.MarkedIrrelevant,
+                    OldStatus = currentStatus,
+                    NewStatus = ComplaintStatus.Irrelevant,
+                    NoteText = reason,
+                    CreatedAt = now
+                }
+            };
+
+            var updated = await _complaintRepository.ApplyAdminUpdateAsync(
+                complaintId,
+                (int)ComplaintStatus.Irrelevant,
+                false,
+                now,
+                updates);
+            if (!updated)
+            {
+                return Result.Failure("Complaint update failed. Please try again.");
+            }
+
+            _logger.LogInformation("Complaint {ComplaintId} marked irrelevant by admin", complaintId);
 
             return await GetComplaintByIdAsync(complaintId);
         }
