@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { complaintApi } from '../../api/complaintApi';
 import { adminApi } from '../../api/adminApi';
 import { noticeApi } from '../../api/noticeApi';
 import { ROUTES } from '../../utils/routes';
 import { getUnreadCount, viewStateEvent } from '../../utils/viewTracking';
+import { LogOut } from 'lucide-react';
 
 export default function Sidebar() {
   const { user, logout, isAdmin } = useAuth();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-  const [unreadCounts, setUnreadCounts] = useState({ complaints: 0, notices: 0, adminComplaints: 0 });
+  const [unreadCounts, setUnreadCounts] = useState({ notices: 0, adminComplaints: 0 });
   const navigate = useNavigate();
   const location = useLocation();
   const userKey = user?.userId || user?.id || user?.email || 'member';
@@ -30,20 +30,15 @@ export default function Sidebar() {
     if (isAdmin) {
       const result = await adminApi.getAll();
       setUnreadCounts({
-        complaints: 0,
         notices: 0,
         adminComplaints: result.isSuccess ? getUnreadCount(userKey, 'adminComplaints', result.data || []) : 0,
       });
       return;
     }
 
-    const [complaintsResult, noticesResult] = await Promise.all([
-      complaintApi.getMy(),
-      noticeApi.getPublished(),
-    ]);
+    const noticesResult = await noticeApi.getPublished();
 
     setUnreadCounts({
-      complaints: complaintsResult.isSuccess ? getUnreadCount(userKey, 'complaints', complaintsResult.data || []) : 0,
       notices: noticesResult.isSuccess ? getUnreadCount(userKey, 'notices', noticesResult.data || []) : 0,
       adminComplaints: 0,
     });
@@ -101,7 +96,6 @@ export default function Sidebar() {
               >
                 <span className="nav-icon">MC</span>
                 My Complaints
-                {unreadCounts.complaints > 0 && <span className="sidebar-unread-count">{unreadCounts.complaints > 99 ? '99+' : unreadCounts.complaints}</span>}
               </NavLink>
             </li>
           )}
@@ -155,7 +149,7 @@ export default function Sidebar() {
           </div>
         </div>
         <button className="sidebar-link logout-btn" onClick={handleLogout}>
-          <span className="nav-icon">SO</span>
+          <span className="nav-icon" aria-hidden="true"><LogOut size={16} /></span>
           Sign Out
         </button>
       </div>

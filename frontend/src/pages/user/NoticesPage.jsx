@@ -6,12 +6,14 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../utils/routes';
-import { formatDate } from '../../utils/enums';
+import { formatDateTime } from '../../utils/enums';
 import { markItemsViewed } from '../../utils/viewTracking';
+import { Eye } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 function getPreview(content) {
   const compact = String(content || '').replace(/\s+/g, ' ').trim();
-  return compact.length > 170 ? `${compact.slice(0, 170)}...` : compact;
+  return compact.length > 120 ? `${compact.slice(0, 120)}...` : compact;
 }
 
 export default function NoticesPage() {
@@ -64,10 +66,10 @@ export default function NoticesPage() {
         <div className="notice-list-grid">
           {visibleNotices.map((notice) => (
             <article className="notice-list-card" key={notice.id}>
-              <div className="notice-card-header"><NoticePriorityBadge priority={notice.priority} /><span>{formatDate(notice.publishedAt)}</span></div>
+              <div className="notice-card-header"><NoticePriorityBadge priority={notice.priority} /><span>{formatDateTime(notice.publishedAt)}</span></div>
               <h2>{notice.title}</h2>
               <p>{getPreview(notice.content)}</p>
-              <button className="table-link" onClick={() => navigate(ROUTES.NOTICE_DETAIL.replace(':id', notice.id))}>View notice</button>
+              <TableActionButton label="View notice" icon={Eye} onClick={() => navigate(ROUTES.NOTICE_DETAIL.replace(':id', notice.id))} />
             </article>
           ))}
         </div>

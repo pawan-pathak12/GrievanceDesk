@@ -8,7 +8,6 @@ export default function AuthBrand() {
       <div className="auth-brand-content">
         <div className="auth-brand-icon">GD</div>
         <h1>GrievanceDesk</h1>
-        <p>Centralized Complaint Management</p>
 
         <div className="auth-brand-features">
           <div className="auth-brand-feature">

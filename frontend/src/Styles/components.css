@@ -402,6 +402,64 @@
   font-weight: 800;
 }
 
+.table-icon-actions,
+.notice-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.table-action-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: var(--primary);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.table-action-icon:hover:not(:disabled),
+.table-action-icon:focus-visible:not(:disabled) {
+  border-color: currentColor;
+  background: var(--primary-soft);
+}
+
+.table-action-icon:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.table-action-success {
+  color: var(--success);
+}
+
+.table-action-success:hover:not(:disabled),
+.table-action-success:focus-visible:not(:disabled) {
+  background: var(--success-bg);
+}
+
+.table-action-warning {
+  color: var(--warning);
+}
+
+.table-action-warning:hover:not(:disabled),
+.table-action-warning:focus-visible:not(:disabled) {
+  background: var(--warning-bg);
+}
+
+.table-action-danger {
+  color: var(--error);
+}
+
+.table-action-danger:hover:not(:disabled),
+.table-action-danger:focus-visible:not(:disabled) {
+  background: var(--error-bg);
+}
+
 .inline-flag {
   display: inline-flex;
   margin-left: 8px;
@@ -745,8 +803,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 220px;
-  padding: 20px;
+  min-height: 184px;
+  padding: 17px 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-card);
@@ -783,17 +841,28 @@
 }
 
 .notice-list-card h2 {
-  margin: 16px 0 8px;
+  display: -webkit-box;
+  margin: 12px 0 6px;
   color: var(--text-dark);
   font-size: 1.05rem;
   line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .notice-list-card p {
-  flex: 1;
-  margin: 0 0 18px;
+  display: -webkit-box;
+  margin: 0;
   color: var(--text-gray);
   line-height: 1.6;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.notice-list-card .table-action-icon {
+  margin-top: auto;
 }
 
 .notice-user-detail-header {

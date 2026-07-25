@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../../api/adminApi';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -7,8 +7,10 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../utils/routes';
-import { CategoryOptions, StatusOptions, formatDate } from '../../utils/enums';
+import { CategoryOptions, StatusOptions, formatDate, formatTime } from '../../utils/enums';
 import { markItemsViewed } from '../../utils/viewTracking';
+import { Eye } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 export default function AdminComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
@@ -19,16 +21,12 @@ export default function AdminComplaintsPage() {
   const { user } = useAuth();
   const userKey = user?.userId || user?.id || user?.email || 'member';
 
-  useEffect(() => {
-    loadComplaints();
-  }, []);
-
-  async function loadComplaints() {
+  const loadComplaints = useCallback(async (activeFilters) => {
     setLoading(true);
     const params = {};
-    if (filters.status !== '') params.status = Number(filters.status);
-    if (filters.category !== '') params.category = Number(filters.category);
-    if (filters.search.trim()) params.search = filters.search.trim();
+    if (activeFilters.status !== '') params.status = Number(activeFilters.status);
+    if (activeFilters.category !== '') params.category = Number(activeFilters.category);
+    if (activeFilters.search.trim()) params.search = activeFilters.search.trim();
 
     const res = await adminApi.getAll(params);
     if (res.isSuccess) {
@@ -38,12 +36,14 @@ export default function AdminComplaintsPage() {
     }
     else toast.error(res.errors?.[0] || 'Failed to load complaints');
     setLoading(false);
-  }
+  }, [toast, userKey]);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    loadComplaints();
-  }
+  useEffect(() => {
+    const delay = filters.search.trim() ? 300 : 0;
+    const timeout = window.setTimeout(() => loadComplaints(filters), delay);
+
+    return () => window.clearTimeout(timeout);
+  }, [filters, loadComplaints]);
 
   return (
     <div>
@@ -52,7 +52,7 @@ export default function AdminComplaintsPage() {
         <p>Filter, review, and action every complaint in the system.</p>
       </div>
 
-      <form className="filter-bar" onSubmit={handleSubmit}>
+      <div className="filter-bar">
         <div className="filter-field">
           <label>Status</label>
           <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
@@ -80,8 +80,7 @@ export default function AdminComplaintsPage() {
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           />
         </div>
-        <button className="btn-outline" type="submit">Apply Filters</button>
-      </form>
+      </div>
 
       {loading ? <LoadingSpinner /> : (
         <div className="data-table-wrapper">
@@ -101,9 +100,10 @@ export default function AdminComplaintsPage() {
                     <th>Case</th>
                     <th>Subject</th>
                     <th>Category</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th></th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -114,10 +114,9 @@ export default function AdminComplaintsPage() {
                       <td><CategoryBadge category={c.category} /></td>
                       <td><StatusBadge status={c.status} /></td>
                       <td>{formatDate(c.createdAt)}</td>
+                      <td>{formatTime(c.createdAt)}</td>
                       <td>
-                        <button className="table-link" onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))}>
-                          Open
-                        </button>
+                        <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))} />
                       </td>
                     </tr>
                   ))}

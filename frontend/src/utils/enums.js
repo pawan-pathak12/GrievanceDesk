@@ -85,6 +85,16 @@ export function formatDate(value, options) {
   });
 }
 
+export function formatTime(value) {
+  if (!value) return 'Not available';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Not available';
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export function formatDateTime(value) {
   if (!value) return 'Not available';
   const date = new Date(value);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import AuthBrand from '../../components/auth/AuthBrand';
@@ -86,6 +87,11 @@ export default function ForgotVerifyOtpPage() {
 
       <div className="auth-form-panel">
         <div className="auth-form-container">
+          <button type="button" className="auth-back-link" onClick={() => navigate('/forgot-password')} disabled={loading}>
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back
+          </button>
+
           <div className="auth-steps">
             <div className="auth-step done"></div>
             <div className="auth-step active"></div>

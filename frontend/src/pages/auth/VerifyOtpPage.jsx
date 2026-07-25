@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
@@ -93,6 +94,11 @@ export default function VerifyOtpPage() {
 
       <div className="auth-form-panel">
         <div className="auth-form-container">
+          <button type="button" className="auth-back-link" onClick={() => navigate(ROUTES.REGISTER_EMAIL)} disabled={loading}>
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back
+          </button>
+
           <div className="auth-steps">
             <div className="auth-step done"></div>
             <div className="auth-step active"></div>

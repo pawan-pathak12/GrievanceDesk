@@ -1,5 +1,5 @@
 import NoticePublicationBadge from './NoticePublicationBadge';
-import { formatDate, formatDateTime } from '../../utils/enums';
+import { formatDateTime } from '../../utils/enums';
 
 function getContentRows(content) {
   const lines = String(content || '').split(/\r?\n/);
@@ -35,7 +35,7 @@ export default function NoticeReadOnlyDetails({ notice, isPublished = notice.isP
           {notice.createdAt && <div><dt>Created</dt><dd>{formatDateTime(notice.createdAt)}</dd></div>}
           {notice.updatedAt && <div><dt>Last Updated</dt><dd>{formatDateTime(notice.updatedAt)}</dd></div>}
           <div><dt>Status</dt><dd><NoticePublicationBadge isPublished={isPublished} /></dd></div>
-          {isPublished && notice.publishedAt && <div><dt>Published</dt><dd>{formatDate(notice.publishedAt)}</dd></div>}
+          {isPublished && notice.publishedAt && <div><dt>Published</dt><dd>{formatDateTime(notice.publishedAt)}</dd></div>}
         </dl>
       </section>
     </>

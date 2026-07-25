@@ -9,7 +9,9 @@ import ComplaintStatusPieChart from '../../components/common/ComplaintStatusPieC
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
-import { formatDate } from '../../utils/enums';
+import { formatDate, formatTime } from '../../utils/enums';
+import { Eye } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
@@ -80,6 +82,7 @@ export default function AdminDashboardPage() {
                   <th>Category</th>
                   <th>Status</th>
                   <th>Date</th>
+                  <th>Time</th>
                   <th></th>
                 </tr>
               </thead>
@@ -91,10 +94,9 @@ export default function AdminDashboardPage() {
                     <td><CategoryBadge category={c.category} /></td>
                     <td><StatusBadge status={c.status} /></td>
                     <td>{formatDate(c.createdAt)}</td>
+                    <td>{formatTime(c.createdAt)}</td>
                     <td>
-                      <button className="table-link" onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))}>
-                        Open
-                      </button>
+                      <TableActionButton label="View complaint" icon={Eye} onClick={() => navigate(ROUTES.ADMIN_COMPLAINT_DETAIL.replace(':id', c.id))} />
                     </td>
                   </tr>
                 ))}

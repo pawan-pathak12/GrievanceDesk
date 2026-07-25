@@ -6,12 +6,15 @@ import NoticePublicationBadge from '../../components/common/NoticePublicationBad
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../context/ToastContext';
 import { ROUTES } from '../../utils/routes';
-import { formatDate } from '../../utils/enums';
+import { formatDate, formatTime } from '../../utils/enums';
+import { Eye, EyeOff, Pencil, Send, Trash2 } from 'lucide-react';
+import TableActionButton from '../../components/common/TableActionButton';
 
 export default function AdminNoticesPage() {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noticeToDelete, setNoticeToDelete] = useState(null);
+  const [noticeToUnpublish, setNoticeToUnpublish] = useState(null);
   const [actionId, setActionId] = useState(null);
   const navigate = useNavigate();
   const toast = useToast();
@@ -41,6 +44,13 @@ export default function AdminNoticesPage() {
       toast.error(result.errors?.[0] || 'Unable to update notice status');
     }
     setActionId(null);
+    return result.isSuccess;
+  }
+
+  async function confirmUnpublish() {
+    if (!noticeToUnpublish) return;
+    const isSuccess = await changePublication(noticeToUnpublish);
+    if (isSuccess) setNoticeToUnpublish(null);
   }
 
   async function archiveNotice() {
@@ -91,7 +101,9 @@ export default function AdminNoticesPage() {
                     <th>Priority</th>
                     <th>Status</th>
                     <th>Created</th>
+                    <th>Created Time</th>
                     <th>Updated</th>
+                    <th>Updated Time</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -102,15 +114,19 @@ export default function AdminNoticesPage() {
                       <td><NoticePriorityBadge priority={notice.priority} /></td>
                       <td><NoticePublicationBadge isPublished={notice.isPublished} /></td>
                       <td>{formatDate(notice.createdAt)}</td>
+                      <td>{formatTime(notice.createdAt)}</td>
                       <td>{formatDate(notice.updatedAt)}</td>
+                      <td>{formatTime(notice.updatedAt)}</td>
                       <td>
                         <div className="notice-row-actions">
-                          <button className="table-link" onClick={() => navigate(ROUTES.ADMIN_NOTICE_DETAIL.replace(':id', notice.id))}>View</button>
-                          <button className="table-link" onClick={() => navigate(ROUTES.ADMIN_NOTICE_EDIT.replace(':id', notice.id))}>Edit</button>
-                          <button className="table-link" disabled={actionId === notice.id} onClick={() => changePublication(notice)}>
-                            {notice.isPublished ? 'Unpublish' : 'Publish'}
-                          </button>
-                          <button className="table-link table-link-danger" disabled={actionId === notice.id} onClick={() => setNoticeToDelete(notice)}>Delete</button>
+                          <TableActionButton label="View notice" icon={Eye} onClick={() => navigate(ROUTES.ADMIN_NOTICE_DETAIL.replace(':id', notice.id))} />
+                          <TableActionButton label="Edit notice" icon={Pencil} onClick={() => navigate(ROUTES.ADMIN_NOTICE_EDIT.replace(':id', notice.id))} />
+                          {notice.isPublished ? (
+                            <TableActionButton label="Unpublish notice" icon={EyeOff} tone="danger" disabled={actionId === notice.id} onClick={() => setNoticeToUnpublish(notice)} />
+                          ) : (
+                            <TableActionButton label="Publish notice" icon={Send} tone="success" disabled={actionId === notice.id} onClick={() => changePublication(notice)} />
+                          )}
+                          <TableActionButton label="Archive notice" icon={Trash2} tone="danger" disabled={actionId === notice.id} onClick={() => setNoticeToDelete(notice)} />
                         </div>
                       </td>
                     </tr>
@@ -119,6 +135,19 @@ export default function AdminNoticesPage() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {noticeToUnpublish && (
+        <div className="notice-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setNoticeToUnpublish(null)}>
+          <section className="notice-dialog" role="dialog" aria-modal="true" aria-labelledby="unpublish-notice-title">
+            <h2 id="unpublish-notice-title">Unpublish notice?</h2>
+            <p>Do you want to unpublish this notice? It will no longer be visible to organization members.</p>
+            <div className="notice-dialog-actions">
+              <button className="btn-cancel" disabled={actionId === noticeToUnpublish.id} onClick={() => setNoticeToUnpublish(null)}>Cancel</button>
+              <button className="btn-danger" disabled={actionId === noticeToUnpublish.id} onClick={confirmUnpublish}>Unpublish Notice</button>
+            </div>
+          </section>
         </div>
       )}
 
