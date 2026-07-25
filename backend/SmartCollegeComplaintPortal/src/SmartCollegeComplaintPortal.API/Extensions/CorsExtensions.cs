@@ -20,7 +20,7 @@
                     "http://localhost:3000",
                     "http://127.0.0.1:3000",
                     "https://localhost:3000",
-                    "https://127.0.0.1:3000"
+                    "https://127.0.0.1:3000", "http://10.10.10.46:5173","http://10.10.10.46:5173"
                 };
 
                 allowedOrigins = allowedOrigins
